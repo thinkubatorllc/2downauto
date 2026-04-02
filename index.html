@@ -353,6 +353,14 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--text);
           <div class="bet-f"><label>Back 9</label><input class="bet-in" type="number" id="n-b9" value="5" min="1"></div>
           <div class="bet-f"><label>Overall</label><input class="bet-in" type="number" id="n-18" value="10" min="1"></div>
         </div>
+        <div class="card-title" style="margin-bottom:6px">Format</div>
+        <div style="display:flex;gap:6px;margin-bottom:10px">
+          <button id="n-mode-h2h" onclick="setMatchMode('nassau','h2h')"
+            style="flex:1;height:34px;border-radius:20px;border:1.5px solid var(--g2);background:var(--g2);color:#fff;font-size:12px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif">👤 Head-to-Head</button>
+          <button id="n-mode-team" onclick="setMatchMode('nassau','team')"
+            style="flex:1;height:34px;border-radius:20px;border:1.5px solid var(--r1);background:var(--white);color:var(--r4);font-size:12px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif">👥 Team Match</button>
+        </div>
+        <div id="nassau-team-builder" style="display:none"></div>
         <div class="note"><strong>Press:</strong> Call a press on the scorecard when down 2+. Each press pays same as original bet.</div>
       </div>
     </div>
@@ -369,6 +377,14 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--text);
           <div class="bet-f"><label>Base Bet</label><input class="bet-in" type="number" id="c-base" value="10" min="1"></div>
           <div class="bet-f"><label>Press Bet</label><input class="bet-in" type="number" id="c-press" value="5" min="1"></div>
         </div>
+        <div class="card-title" style="margin-bottom:6px">Format</div>
+        <div style="display:flex;gap:6px;margin-bottom:10px">
+          <button id="c-mode-h2h" onclick="setMatchMode('closeout','h2h')"
+            style="flex:1;height:34px;border-radius:20px;border:1.5px solid var(--g2);background:var(--g2);color:#fff;font-size:12px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif">👤 Head-to-Head</button>
+          <button id="c-mode-team" onclick="setMatchMode('closeout','team')"
+            style="flex:1;height:34px;border-radius:20px;border:1.5px solid var(--r1);background:var(--white);color:var(--r4);font-size:12px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif">👥 Team Match</button>
+        </div>
+        <div id="closeout-team-builder" style="display:none"></div>
         <div style="font-size:12px;color:var(--r3)">Press auto-triggers when down more holes than remain. Press pays half the base.</div>
       </div>
     </div>
@@ -524,7 +540,8 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--text);
   <div class="scroll body" id="results-body" style="padding-bottom:110px"></div>
   <div class="bar" style="position:sticky;bottom:0">
     <button class="btn btn-p" onclick="finishRound()" style="margin-bottom:8px">Save Round & Done ✓</button>
-    <button class="btn btn-s" onclick="goTo('s-card')">← Back to Scorecard</button>
+    <button class="btn btn-s" onclick="goTo('s-card')" style="margin-bottom:8px">← Back to Scorecard</button>
+    <button class="btn btn-s" onclick="abandonFromResults()" style="border-color:var(--red);color:var(--red)">Abandon Round — Don't Save</button>
   </div>
 </div>
 
@@ -843,6 +860,16 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--text);
   </div>
 </div>
 
+<div class="overlay" id="m-abandon" onclick="if(event.target===this)closeModal('m-abandon')">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <h3 id="abandon-title">Are you sure?</h3>
+    <p style="font-size:14px;color:var(--r3);margin-bottom:20px;line-height:1.5" id="abandon-msg">This cannot be undone.</p>
+    <button class="btn btn-red" id="abandon-confirm-btn" onclick="confirmAbandon()" style="margin-bottom:8px">Yes, Confirm</button>
+    <button class="btn btn-s" id="abandon-cancel-btn" onclick="closeModal('m-abandon')">Cancel</button>
+  </div>
+</div>
+
 <script>
 // ═══════════════════════════════════════════════════
 //  CONSTANTS
@@ -864,6 +891,10 @@ let S = {
   opps: [],           // [{name,hdcp,type,id}]
   games: {nassau:false,closeout:false,wolf:false,junk:false},
   bets: {nassau:{f9:5,b9:5,overall:10}, closeout:{base:10,press:5}, wolf:{pt:2}, junk:{pt:1}},
+  nassauMode: 'h2h',   // 'h2h' or 'team'
+  closeoutMode: 'h2h',
+  nassauTeams: {A:[], B:[]},
+  closeoutTeams: {A:[], B:[]},
   junkCats: {skins:true,birdies:true,eagles:true,greenies:true,proxies:true,sandies:true,pollies:true,partnerpar:true},
   partnerParTeams: {A:[], B:[]}, // player ids per team
   wolfOrder: [],      // array of ids in tee order
@@ -928,7 +959,7 @@ function goNav(tab){
   if(tab==='ledger')  renderLedger();
   if(tab==='roster')  renderRoster();
   if(tab==='tmt')     renderTmtHub();
-  if(tab==='home')    renderHome();
+  if(tab==='home')  { renderHome(); updateHomeCTA(); }
 }
 
 function nav(dest){
@@ -971,9 +1002,12 @@ function renderHome(){
 
 function updateHomeCTA(){
   const bar = document.getElementById('home-bar');
+  if(!bar) return;
+  // Remove any existing abandon button
   const ab = document.getElementById('abandon-btn');
   if(ab) ab.remove();
   const btn = document.getElementById('home-cta');
+  if(!btn) return;
   if(R){
     btn.textContent = '▶ Resume Round — Hole '+(R.currentHole+1);
     btn.onclick = ()=>{ initScorecard(); goTo('s-card'); };
@@ -1078,6 +1112,94 @@ function toggleGame(g){
   document.getElementById('tog-'+g).classList.toggle('on', S.games[g]);
   document.getElementById('gc-'+g).classList.toggle('on', S.games[g]);
   if(g==='junk') renderPartnerParTeamBuilder();
+}
+
+function setMatchMode(game, mode){
+  if(game==='nassau') S.nassauMode=mode;
+  else S.closeoutMode=mode;
+
+  const prefix = game==='nassau'?'n':'c';
+  const h2hBtn = document.getElementById(`${prefix}-mode-h2h`);
+  const teamBtn = document.getElementById(`${prefix}-mode-team`);
+  const builderEl = document.getElementById(`${game}-team-builder`);
+
+  h2hBtn.style.background = mode==='h2h'?'var(--g2)':'var(--white)';
+  h2hBtn.style.color = mode==='h2h'?'#fff':'var(--r4)';
+  h2hBtn.style.borderColor = mode==='h2h'?'var(--g2)':'var(--r1)';
+  teamBtn.style.background = mode==='team'?'var(--g2)':'var(--white)';
+  teamBtn.style.color = mode==='team'?'#fff':'var(--r4)';
+  teamBtn.style.borderColor = mode==='team'?'var(--g2)':'var(--r1)';
+
+  builderEl.style.display = mode==='team'?'block':'none';
+  if(mode==='team') renderMatchTeamBuilder(game);
+}
+
+function renderMatchTeamBuilder(game){
+  const el = document.getElementById(`${game}-team-builder`);
+  if(!el) return;
+  const teams = game==='nassau' ? S.nassauTeams : S.closeoutTeams;
+  const allPlayers = [
+    {id:'you', name:S.you.name||'You', avClass:'av-you'},
+    ...S.opps.map((o,i)=>({id:o.id, name:o.name, avClass:AV[i%AV.length]}))
+  ];
+  if(!allPlayers.length){ el.innerHTML='<div style="font-size:12px;color:var(--r3);margin-bottom:8px">Add players first</div>'; return; }
+
+  const teamLabel = (t,name) => `<div style="font-size:10px;font-weight:700;color:${t==='A'?'var(--g1)':'#1e40af'};text-transform:uppercase;letter-spacing:.07em;margin-bottom:5px">Team ${t}${name?' — '+name:''}</div>`;
+  const teamAPlayers = teams.A.map(id=>allPlayers.find(p=>p.id==id)).filter(Boolean);
+  const teamBPlayers = teams.B.map(id=>allPlayers.find(p=>p.id==id)).filter(Boolean);
+
+  el.innerHTML = `<div style="background:var(--white);border-radius:var(--rad-s);border:1px solid var(--r1);padding:10px 12px;margin-bottom:8px">
+    <div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:8px">Assign players to teams</div>
+    ${allPlayers.map((p,i)=>{
+      const inA = teams.A.some(id=>id==p.id);
+      const inB = teams.B.some(id=>id==p.id);
+      return `<div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--r0)" data-match-player="${i}">
+        <div class="av ${p.avClass}" style="width:28px;height:28px;font-size:10px;flex-shrink:0">${p.name[0].toUpperCase()}</div>
+        <span style="flex:1;font-size:14px;font-weight:500">${p.name}</span>
+        <div style="display:flex;gap:4px">
+          <button class="match-team-btn" data-game="${game}" data-pid="${p.id}" data-team="A"
+            style="width:36px;height:30px;border-radius:var(--rad-xs);border:1.5px solid ${inA?'var(--g2)':'var(--r1)'};
+            background:${inA?'var(--g2)':'var(--white)'};color:${inA?'#fff':'var(--r4)'};
+            font-size:11px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif">A</button>
+          <button class="match-team-btn" data-game="${game}" data-pid="${p.id}" data-team="B"
+            style="width:36px;height:30px;border-radius:var(--rad-xs);border:1.5px solid ${inB?'#2563eb':'var(--r1)'};
+            background:${inB?'#2563eb':'var(--white)'};color:${inB?'#fff':'var(--r4)'};
+            font-size:11px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif">B</button>
+        </div>
+      </div>`;
+    }).join('')}
+    <div style="display:flex;gap:8px;margin-top:10px">
+      <div style="flex:1;background:var(--gt);border-radius:var(--rad-xs);padding:6px 8px">
+        ${teamLabel('A','')}
+        <div style="font-size:12px;color:var(--g1)">${teamAPlayers.length?teamAPlayers.map(p=>p.name).join(', '):'None yet'}</div>
+      </div>
+      <div style="flex:1;background:#eff6ff;border-radius:var(--rad-xs);padding:6px 8px">
+        ${teamLabel('B','')}
+        <div style="font-size:12px;color:#1e40af">${teamBPlayers.length?teamBPlayers.map(p=>p.name).join(', '):'None yet'}</div>
+      </div>
+    </div>
+  </div>`;
+
+  // Wire buttons via event listeners
+  el.querySelectorAll('.match-team-btn').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const g2 = btn.dataset.game;
+      const rawPid = btn.dataset.pid;
+      const pid = rawPid==='you'?'you':parseFloat(rawPid);
+      const team = btn.dataset.team;
+      setMatchTeam(g2, pid, team);
+    });
+  });
+}
+
+function setMatchTeam(game, pid, team){
+  const teams = game==='nassau' ? S.nassauTeams : S.closeoutTeams;
+  const other = team==='A'?'B':'A';
+  const alreadyOn = teams[team].some(id=>id==pid);
+  teams.A = teams.A.filter(id=>id!=pid);
+  teams.B = teams.B.filter(id=>id!=pid);
+  if(!alreadyOn) teams[team].push(pid);
+  renderMatchTeamBuilder(game);
 }
 
 function toggleJunkCat(btn){
@@ -1263,8 +1385,24 @@ function setWho(idx,who,btn){
 function showConfirm(){
   let html=`<div class="sum-row"><span class="muted">Course</span><span style="font-weight:600">Musket Ridge GC</span></div>
     <div class="sum-row"><span class="muted">Players</span><span style="font-weight:600">${S.you.name} + ${S.opps.length}</span></div>`;
-  if(S.games.nassau) html+=`<div class="sum-row"><span class="muted">Nassau</span><span style="font-weight:600">$${S.bets.nassau.f9}/$${S.bets.nassau.b9}/$${S.bets.nassau.overall}</span></div>`;
-  if(S.games.closeout) html+=`<div class="sum-row"><span class="muted">Closeout</span><span style="font-weight:600">$${S.bets.closeout.base} · press $${S.bets.closeout.press}</span></div>`;
+  if(S.games.nassau){
+    const mode = S.nassauMode==='team'?'Team Best Ball':'Head-to-Head';
+    html+=`<div class="sum-row"><span class="muted">Nassau</span><span style="font-weight:600">$${S.bets.nassau.f9}/$${S.bets.nassau.b9}/$${S.bets.nassau.overall} · ${mode}</span></div>`;
+    if(S.nassauMode==='team'){
+      const tA=S.nassauTeams.A.map(id=>id==='you'?S.you.name:S.opps.find(o=>o.id==id)?.name||'?').join(', ');
+      const tB=S.nassauTeams.B.map(id=>id==='you'?S.you.name:S.opps.find(o=>o.id==id)?.name||'?').join(', ');
+      html+=`<div class="sum-row" style="flex-direction:column;align-items:flex-start;gap:2px"><span style="font-size:12px;color:var(--r3)">Team A: ${tA||'—'}</span><span style="font-size:12px;color:var(--r3)">Team B: ${tB||'—'}</span></div>`;
+    }
+  }
+  if(S.games.closeout){
+    const mode = S.closeoutMode==='team'?'Team Best Ball':'Head-to-Head';
+    html+=`<div class="sum-row"><span class="muted">Closeout</span><span style="font-weight:600">$${S.bets.closeout.base} · press $${S.bets.closeout.press} · ${mode}</span></div>`;
+    if(S.closeoutMode==='team'){
+      const tA=S.closeoutTeams.A.map(id=>id==='you'?S.you.name:S.opps.find(o=>o.id==id)?.name||'?').join(', ');
+      const tB=S.closeoutTeams.B.map(id=>id==='you'?S.you.name:S.opps.find(o=>o.id==id)?.name||'?').join(', ');
+      html+=`<div class="sum-row" style="flex-direction:column;align-items:flex-start;gap:2px"><span style="font-size:12px;color:var(--r3)">Team A: ${tA||'—'}</span><span style="font-size:12px;color:var(--r3)">Team B: ${tB||'—'}</span></div>`;
+    }
+  }
   if(S.games.wolf) html+=`<div class="sum-row"><span class="muted">Wolf</span><span style="font-weight:600">$${S.bets.wolf.pt}/pt</span></div>`;
   if(S.games.junk) html+=`<div class="sum-row"><span class="muted">Junk</span><span style="font-weight:600">$${S.bets.junk.pt}/pt · 8 categories</span></div>`;
   html+='<div class="sep"></div>';
@@ -1290,9 +1428,12 @@ function startRound(){
   R={
     you:S.you, opps:S.opps, games:S.games, bets:S.bets, wolfOrder:S.wolfOrder, matches:S.matches,
     junkCats:S.junkCats, partnerParTeams:S.partnerParTeams,
+    nassauMode:S.nassauMode, closeoutMode:S.closeoutMode,
+    nassauTeams:S.nassauTeams, closeoutTeams:S.closeoutTeams,
     scores:Array(18).fill(null).map(()=>{const o={you:''};S.opps.forEach(op=>o[op.id]='');return o;}),
     wolfHoles:Array(18).fill(null).map(()=>({captainId:null,partnerId:null,isBlind:false,isLone:false,decided:false})),
     nassauPresses:S.opps.map(()=>({f9p1:null,f9p2:null,f9p3:null,b9p1:null,b9p2:null,b9p3:null})),
+    nassauTeamPresses:{f9p1:null,f9p2:null,f9p3:null,b9p1:null,b9p2:null,b9p3:null},
     // junkHoles[h] = {greenie:id|null, proxy:id|null, sandies:[ids], pollies:[ids], greenieSet:bool, proxySet:bool}
     junkHoles:Array(18).fill(null).map(()=>({greenie:null,proxy:null,sandies:[],pollies:[],greenieSet:false,proxySet:false})),
     currentHole:0, date, adminEdits:[]
@@ -1309,12 +1450,37 @@ function startRound(){
   updateHomeCTA();
 }
 
+let _abandonCallback = null;
+
+function openAbandonModal(msg, callback, opts={}){
+  document.getElementById('abandon-title').textContent = opts.title || 'Are you sure?';
+  document.getElementById('abandon-msg').textContent = msg;
+  document.getElementById('abandon-confirm-btn').textContent = opts.confirmText || 'Yes, Confirm';
+  document.getElementById('abandon-cancel-btn').textContent = opts.cancelText || 'Cancel';
+  _abandonCallback = callback;
+  openModal('m-abandon');
+}
+
+function confirmAbandon(){
+  closeModal('m-abandon');
+  if(_abandonCallback) _abandonCallback();
+  _abandonCallback = null;
+}
+
 function abandonRound(){
-  if(!confirm('Abandon this round?')) return;
-  clearR();
-  R = null;
-  updateHomeCTA();
-  renderHome();
+  openAbandonModal(
+    'This round will not be saved. All scores and bets will be lost.',
+    ()=>{ clearR(); R = null; goTo('s-players'); },
+    {title:'Abandon Round?', confirmText:'Yes, Abandon Round', cancelText:'Keep Playing'}
+  );
+}
+
+function abandonFromResults(){
+  openAbandonModal(
+    'This round will not be saved. All scores and bets will be lost.',
+    ()=>{ clearR(); R = null; goNav('home'); updateHomeCTA(); },
+    {title:'Abandon Round?', confirmText:'Yes, Abandon Round', cancelText:'Keep Playing'}
+  );
 }
 
 // ═══════════════════════════════════════════════════
@@ -1334,8 +1500,121 @@ function netOpp(raw, strokes, youGet, hcpIdx){
 }
 function holeWin(yn,on){ if(yn===null||on===null) return null; return yn<on?'W':yn>on?'L':'H'; }
 
+// ── TEAM MATCH HELPERS ────────────────────────────
+// Get best net score for a team on a hole
+function teamBestNet(team, h){
+  const sc = R.scores[h];
+  let best = null;
+  team.forEach(pid=>{
+    const raw = pid==='you' ? sc.you : sc[pid];
+    // Find strokes for this player
+    let strokes=0, youGet=false;
+    if(pid==='you'){
+      // "you" always compares as yourself — strokes come from match context
+      // In team mode we use the player's stored hdcp vs course
+      strokes = 0; youGet = false; // net = gross for now, hdcp applied via HCP index
+    } else {
+      const opp = R.opps.find(o=>o.id==pid);
+      if(opp){
+        strokes = opp.hdcp; youGet = true; // opp gets strokes vs scratch baseline
+      }
+    }
+    // Simple net: subtract stroke if HCP[h] <= player handicap
+    const gross = parseInt(raw);
+    if(isNaN(gross)) return;
+    // Use player's own handicap for net calculation
+    const hdcp = pid==='you' ? R.you.hdcp : (R.opps.find(o=>o.id==pid)?.hdcp||0);
+    const net = gross - (HCP[h] <= hdcp ? 1 : 0);
+    if(best===null || net<best) best=net;
+  });
+  return best;
+}
+
+function calcCloseoutTeam(){
+  if(!R.games.closeout) return null;
+  const teams = R.closeoutTeams || {A:[],B:[]};
+  if(!teams.A.length||!teams.B.length) return null;
+  let status=0,pressRes=0,closedAt=null,pressActive=false;
+  const results=[];
+  for(let h=0;h<18;h++){
+    const bestA = teamBestNet(teams.A,h);
+    const bestB = teamBestNet(teams.B,h);
+    const res = holeWin(bestA,bestB); // A=you side, B=opp side
+    results.push(res);
+    if(res===null) break;
+    const rem=17-h;
+    if(closedAt===null){
+      status+=res==='W'?1:res==='L'?-1:0;
+      if(Math.abs(status)>rem){closedAt=h;pressActive=true;}
+    } else {
+      pressRes+=res==='W'?1:res==='L'?-1:0;
+    }
+  }
+  const played=results.filter(r=>r!==null).length;
+  const done=closedAt!==null||played===18;
+  const mainPay=done?(status>0?R.bets.closeout.base:status<0?-R.bets.closeout.base:0):null;
+  const pressPay=(pressActive&&played===18)?(pressRes>0?R.bets.closeout.press:pressRes<0?-R.bets.closeout.press:0):null;
+  // Figure out if "you" are on team A or B to determine sign of payout
+  const youOnA = teams.A.some(id=>id==='you'||id=='you');
+  const paySign = youOnA?1:-1;
+  return{status:status*paySign,pressRes:pressRes*paySign,closedAt,mainPay:mainPay?mainPay*paySign:null,pressPay:pressPay?pressPay*paySign:null,total:((mainPay||0)+(pressPay||0))*paySign,played,results,isTeam:true,teams};
+}
+
+function calcNassauTeam(){
+  if(!R.games.nassau) return null;
+  const teams = R.nassauTeams || {A:[],B:[]};
+  if(!teams.A.length||!teams.B.length) return null;
+  const bet = R.bets.nassau;
+  const youOnA = teams.A.some(id=>id==='you'||id=='you');
+  const sign = youOnA?1:-1;
+
+  // Use first team member's nassau presses (or a shared press tracker)
+  // For team mode we use a dedicated press tracker stored as R.nassauTeamPresses
+  const pr = R.nassauTeamPresses || {f9p1:null,f9p2:null,f9p3:null,b9p1:null,b9p2:null,b9p3:null};
+
+  function nine(start,end,pkeys,betAmt){
+    let status=0;
+    const pst=pkeys.map(k=>({key:k,start:pr[k],result:0,active:false}));
+    const res=[];
+    for(let h=start;h<=end;h++){
+      const bestA=teamBestNet(teams.A,h), bestB=teamBestNet(teams.B,h);
+      const r=holeWin(bestA,bestB);
+      res.push(r); if(r===null) break;
+      const d=(r==='W'?1:r==='L'?-1:0)*sign;
+      status+=r==='W'?1:r==='L'?-1:0;
+      pst.forEach(p=>{if(p.start!==null&&(h+1)>=p.start){p.active=true;p.result+=r==='W'?1:r==='L'?-1:0;}});
+    }
+    const played=res.filter(r=>r!==null).length;
+    const done=played===(end-start+1);
+    const rawStatus=status*sign;
+    const mainPay=done?(rawStatus>0?betAmt:rawStatus<0?-betAmt:0):null;
+    const pressPays=pst.map(p=>{
+      if(!p.active||!done) return 0;
+      const rs=p.result*sign;
+      return rs>0?betAmt:rs<0?-betAmt:0;
+    });
+    return{status:rawStatus,res,mainPay,pressPays,pst,played,done};
+  }
+
+  const front=nine(0,8,['f9p1','f9p2','f9p3'],bet.f9);
+  const back=nine(9,17,['b9p1','b9p2','b9p3'],bet.b9);
+  let ov=0;
+  for(let h=0;h<18;h++){
+    const bestA=teamBestNet(teams.A,h), bestB=teamBestNet(teams.B,h);
+    const r=holeWin(bestA,bestB); if(r===null) break;
+    ov+=(r==='W'?1:r==='L'?-1:0)*sign;
+  }
+  const allDone=R.scores.every(sc=>typeof sc.you==='number');
+  const ovPay=allDone?(ov>0?bet.overall:ov<0?-bet.overall:0):null;
+  const total=(front.mainPay||0)+front.pressPays.reduce((a,b)=>a+b,0)+
+              (back.mainPay||0)+back.pressPays.reduce((a,b)=>a+b,0)+(ovPay||0);
+  return{front,back,ov,ovPay,total,isTeam:true,teams};
+}
+
 // ── CLOSEOUT ─────────────────────────────────────
 function calcCloseout(mi){
+  // Route to team engine if team mode
+  if(R.closeoutMode==='team') return mi===0 ? calcCloseoutTeam() : null;
   const o=R.opps[mi], m=R.matches[mi];
   if(!m.inCloseout) return null;
   let status=0,pressRes=0,closedAt=null,pressActive=false;
@@ -1364,6 +1643,8 @@ function calcCloseout(mi){
 
 // ── NASSAU ────────────────────────────────────────
 function calcNassau(mi){
+  // Route to team engine if team mode
+  if(R.nassauMode==='team') return mi===0 ? calcNassauTeam() : null;
   const o=R.opps[mi], m=R.matches[mi];
   if(!m.inNassau) return null;
   const pr=R.nassauPresses[mi], bet=R.bets.nassau;
@@ -2063,8 +2344,58 @@ function renderStatusPanel(){
   const el=document.getElementById('status-panel');
   let html='';
 
+  // Team Nassau status card
+  if(R.nassauMode==='team'&&R.games.nassau){
+    const n=calcNassauTeam();
+    if(n){
+      const parts=[];
+      parts.push(`<span style="color:var(--r3);font-size:11px">F9</span> <span style="font-weight:600;color:${stCol(n.front.status)}">${stTxt(n.front.status,n.front.played)}</span>`);
+      if(n.back.played>0) parts.push(`<span style="color:var(--r3);font-size:11px">B9</span> <span style="font-weight:600;color:${stCol(n.back.status)}">${stTxt(n.back.status,n.back.played)}</span>`);
+      parts.push(`<span style="color:var(--r3);font-size:11px">18</span> <span style="font-weight:600;color:${stCol(n.ov)}">${stTxt(n.ov,n.front.played+n.back.played)}</span>`);
+      const teams=R.nassauTeams;
+      const tA=teams.A.map(id=>id==='you'?R.you.name:R.opps.find(o=>o.id==id)?.name||'?').join(' & ');
+      const tB=teams.B.map(id=>id==='you'?R.you.name:R.opps.find(o=>o.id==id)?.name||'?').join(' & ');
+      const nc=n.total>0?'var(--g2)':n.total<0?'var(--red)':'var(--r3)';
+      html+=`<div class="status-card">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">
+          <span style="font-size:14px;font-weight:600">🏌️ Nassau — Team</span>
+          <span style="font-family:'DM Serif Display',serif;font-size:16px;color:${nc}">${n.total===0?'$0':n.total>0?'+$'+n.total:'-$'+Math.abs(n.total)}</span>
+        </div>
+        <div style="font-size:11px;color:var(--r3);margin-bottom:5px">A: ${tA} · B: ${tB}</div>
+        <div style="display:flex;flex-wrap:wrap;gap:7px;align-items:center">${parts.join('<span style="color:var(--r2)">·</span>')}</div>
+      </div>`;
+    }
+  }
+
+  // Team Closeout status card
+  if(R.closeoutMode==='team'&&R.games.closeout){
+    const c=calcCloseoutTeam();
+    if(c){
+      const parts=[];
+      const lbl=c.closedAt!==null?'CLOSED':'Match';
+      parts.push(`<span style="color:var(--r3);font-size:11px">${lbl}</span> <span style="font-weight:600;color:${stCol(c.status)}">${stTxt(c.status,c.played)}</span>`);
+      if(c.pressActive) parts.push(`<span style="background:var(--gold-p);color:var(--gold-d);padding:1px 5px;border-radius:4px;font-size:11px">Press ${stTxt(c.pressRes,1)}</span>`);
+      const teams=R.closeoutTeams;
+      const tA=teams.A.map(id=>id==='you'?R.you.name:R.opps.find(o=>o.id==id)?.name||'?').join(' & ');
+      const tB=teams.B.map(id=>id==='you'?R.you.name:R.opps.find(o=>o.id==id)?.name||'?').join(' & ');
+      const nc=c.total>0?'var(--g2)':c.total<0?'var(--red)':'var(--r3)';
+      html+=`<div class="status-card">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">
+          <span style="font-size:14px;font-weight:600">🔒 Closeout — Team</span>
+          <span style="font-family:'DM Serif Display',serif;font-size:16px;color:${nc}">${c.total===0?'$0':c.total>0?'+$'+c.total:'-$'+Math.abs(c.total)}</span>
+        </div>
+        <div style="font-size:11px;color:var(--r3);margin-bottom:5px">A: ${tA} · B: ${tB}</div>
+        <div style="display:flex;flex-wrap:wrap;gap:7px;align-items:center">${parts.join('<span style="color:var(--r2)">·</span>')}</div>
+      </div>`;
+    }
+  }
+
+  // H2H per-opponent status cards
   R.opps.forEach((o,i)=>{
-    const n=calcNassau(i), c=calcCloseout(i);
+    // Get H2H results only (not team)
+    const n=(R.nassauMode==='h2h')?calcNassau(i):null;
+    const c=(R.closeoutMode==='h2h')?calcCloseout(i):null;
+    if(!n&&!c) return; // skip if no H2H games for this opponent
     const parts=[];
     if(n){
       parts.push(`<span style="color:var(--r3);font-size:11px">F9</span> <span style="font-weight:600;color:${stCol(n.front.status)}">${stTxt(n.front.status,n.front.played)}</span>`);
@@ -2203,8 +2534,69 @@ function renderResults(){
   let html='', yourNet=0;
   document.getElementById('res-eye').textContent=R.date;
 
+  // Helper to get team display names
+  const teamName=(teams,side)=>{
+    return (teams[side]||[]).map(id=>{
+      if(id==='you'||id=='you') return R.you.name;
+      return R.opps.find(o=>o.id==id)?.name||'?';
+    }).join(' & ');
+  };
+
+  // Team Nassau — single card
+  if(R.nassauMode==='team'&&R.games.nassau){
+    const n=calcNassauTeam();
+    if(n){
+      let rows='',matchNet=0;
+      const addRow=(lbl,amt)=>{if(amt!==null){rows+=resRow(lbl,amt);matchNet+=amt;}};
+      addRow('Nassau F9',n.front.mainPay);
+      n.front.pressPays.forEach((pp,pi)=>{if(n.front.pst[pi].active)addRow(`Nassau F9 Press ${pi+1}`,pp);});
+      addRow('Nassau B9',n.back.mainPay);
+      n.back.pressPays.forEach((pp,pi)=>{if(n.back.pst[pi].active)addRow(`Nassau B9 Press ${pi+1}`,pp);});
+      addRow('Nassau Overall',n.ovPay);
+      yourNet+=matchNet;
+      const nc=matchNet>0?'var(--g2)':matchNet<0?'var(--red)':'var(--r3)';
+      const tA=teamName(n.teams,'A'), tB=teamName(n.teams,'B');
+      const wt=matchNet>0?`Team A wins $${matchNet}`:matchNet<0?`Team B wins $${Math.abs(matchNet)}`:'All square';
+      html+=`<div class="res-card">
+        <div class="res-hdr" style="background:var(--gt);border-bottom-color:var(--gp)">
+          <div><div style="font-size:15px;font-weight:600;color:var(--g1)">🏌️ Nassau — Team Match</div>
+          <div style="font-size:11px;color:var(--r3);margin-top:2px">A: ${tA} · B: ${tB}</div></div>
+          <span style="font-family:'DM Serif Display',serif;font-size:18px;color:${nc}">${matchNet>=0?'+$':'-$'}${Math.abs(matchNet)}</span>
+        </div>
+        <div style="padding:2px 14px">${rows}</div>
+        <div style="padding:8px 14px;background:var(--r0);font-size:12px;color:var(--r4);font-style:italic">${wt}</div>
+      </div>`;
+    }
+  }
+
+  // Team Closeout — single card
+  if(R.closeoutMode==='team'&&R.games.closeout){
+    const c=calcCloseoutTeam();
+    if(c){
+      let rows='',matchNet=0;
+      if(c.mainPay!==null){rows+=resRow('Closeout',c.mainPay);matchNet+=c.mainPay;}
+      if(c.pressPay!==null){rows+=resRow('Closeout Press',c.pressPay);matchNet+=c.pressPay;}
+      yourNet+=matchNet;
+      const nc=matchNet>0?'var(--g2)':matchNet<0?'var(--red)':'var(--r3)';
+      const tA=teamName(c.teams,'A'), tB=teamName(c.teams,'B');
+      const wt=matchNet>0?`Team A wins $${matchNet}`:matchNet<0?`Team B wins $${Math.abs(matchNet)}`:'All square';
+      html+=`<div class="res-card">
+        <div class="res-hdr" style="background:#fff8e6;border-bottom-color:#fde68a">
+          <div><div style="font-size:15px;font-weight:600;color:#92400e">🔒 Closeout — Team Match</div>
+          <div style="font-size:11px;color:var(--r3);margin-top:2px">A: ${tA} · B: ${tB}</div></div>
+          <span style="font-family:'DM Serif Display',serif;font-size:18px;color:${nc}">${matchNet>=0?'+$':'-$'}${Math.abs(matchNet)}</span>
+        </div>
+        <div style="padding:2px 14px">${rows}</div>
+        <div style="padding:8px 14px;background:var(--r0);font-size:12px;color:var(--r4);font-style:italic">${wt}</div>
+      </div>`;
+    }
+  }
+
+  // H2H per-opponent cards (only for games in H2H mode)
   R.opps.forEach((o,i)=>{
-    const n=calcNassau(i), c=calcCloseout(i);
+    const n=(R.nassauMode==='h2h')?calcNassau(i):null;
+    const c=(R.closeoutMode==='h2h')?calcCloseout(i):null;
+    if(!n&&!c) return;
     let matchNet=0, rows='';
     if(n){
       const addRow=(lbl,amt)=>{if(amt!==null){rows+=resRow(lbl,amt);matchNet+=amt;}};
@@ -2331,8 +2723,20 @@ function finishRound(){
   const jr=calcJunk();
   let dayNet=0; const breakdown=[];
 
+  // Team Nassau net
+  if(R.nassauMode==='team'&&R.games.nassau){
+    const n=calcNassauTeam();
+    if(n){ dayNet+=n.total; if(n.total!==0) breakdown.push({label:'Nassau (Team)',net:n.total}); }
+  }
+  // Team Closeout net
+  if(R.closeoutMode==='team'&&R.games.closeout){
+    const c=calcCloseoutTeam();
+    if(c){ const t=(c.mainPay||0)+(c.pressPay||0); dayNet+=t; if(t!==0) breakdown.push({label:'Closeout (Team)',net:t}); }
+  }
+  // H2H per-opponent net
   R.opps.forEach((o,i)=>{
-    const n=calcNassau(i), c=calcCloseout(i);
+    const n=(R.nassauMode==='h2h')?calcNassau(i):null;
+    const c=(R.closeoutMode==='h2h')?calcCloseout(i):null;
     let mn=0;
     if(n) mn+=n.total;
     if(c) mn+=(c.mainPay||0)+(c.pressPay||0);
@@ -2348,12 +2752,14 @@ function finishRound(){
   // Save round
   DB.rounds.unshift({date:R.date,course:'Musket Ridge GC',players:`${R.you.name} + ${R.opps.length}`,games,net:dayNet,breakdown,scores:R.scores,opps:R.opps,you:R.you,matches:R.matches,bets:R.bets,wolfHoles:R.wolfHoles,nassauPresses:R.nassauPresses,junkHoles:R.junkHoles});
 
-  // Update ledger & h2h
+  // Update ledger & h2h — H2H opponents only
   R.opps.forEach((o,i)=>{
-    const n=calcNassau(i),c=calcCloseout(i);
+    const n=(R.nassauMode==='h2h')?calcNassau(i):null;
+    const c=(R.closeoutMode==='h2h')?calcCloseout(i):null;
     let mn=0;
     if(n) mn+=n.total;
     if(c) mn+=(c.mainPay||0)+(c.pressPay||0);
+    if(!n&&!c) return;
     const key=normName(o.name);
     if(!DB.ledger[key]) DB.ledger[key]={name:o.name,net:0,rounds:0};
     DB.ledger[key].net+=mn; DB.ledger[key].rounds++;
@@ -2594,11 +3000,11 @@ function saveRosterEdit(){
 
 function deleteRosterPlayer(){
   const idx = +document.getElementById('er-idx').value;
-  if(!confirm('Remove this player from the roster?')) return;
-  DB.roster.splice(idx, 1);
-  saveDB();
-  renderRoster();
-  closeModal('m-edit-roster');
+  openAbandonModal(
+    'This player will be removed from your roster. This cannot be undone.',
+    ()=>{ DB.roster.splice(idx, 1); saveDB(); renderRoster(); closeModal('m-edit-roster'); },
+    {title:'Remove Player?', confirmText:'Yes, Remove', cancelText:'Cancel'}
+  );
 }
 
 function renderRoster(){
@@ -3024,11 +3430,16 @@ function tPrevHole(){ if(T.currentHole>0){T.currentHole--;saveT();initTScoring()
 function tNextHole(){ if(T.currentHole<17){T.currentHole++;saveT();initTScoring();window.scrollTo(0,0);}else{goTo('s-t-lb');renderTLB();} }
 
 function endTmt(){
-  if(!confirm('End this tournament and archive it?')) return;
-  const lb=calcLB();
-  DB.pastTournaments=DB.pastTournaments||[];
-  DB.pastTournaments.unshift({name:T.name,date:new Date().toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}),players:T.players.length,rounds:T.rounds,winner:lb.gross[0]?.name||'—'});
-  saveDB(); clearT(); T=null; goNav('tmt');
+  openAbandonModal(
+    'This tournament will be archived and moved to past tournaments.',
+    ()=>{
+      const lb=calcLB();
+      DB.pastTournaments=DB.pastTournaments||[];
+      DB.pastTournaments.unshift({name:T.name,date:new Date().toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}),players:T.players.length,rounds:T.rounds,winner:lb.gross[0]?.name||'—'});
+      saveDB(); clearT(); T=null; goNav('tmt');
+    },
+    {title:'End Tournament?', confirmText:'Yes, End & Archive', cancelText:'Cancel'}
+  );
 }
 
 // ═══════════════════════════════════════════════════
