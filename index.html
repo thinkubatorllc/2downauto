@@ -449,12 +449,21 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--text);
       </div>
     </div>
 
-    <!-- Vegas (stub) -->
-    <div class="gc gc-soon">
-      <div class="gc-hdr">
+    <!-- Vegas -->
+    <div class="gc" id="gc-vegas">
+      <div class="gc-hdr" onclick="toggleGame('vegas')">
         <div class="gc-icon" style="background:#f0f5ff">🎲</div>
-        <div style="flex:1"><div class="gc-name">Vegas <span class="badge-soon">Coming Soon</span></div><div class="gc-desc">Combined team score · flip on birdie</div></div>
-        <div class="tog"><div class="tog-k"></div></div>
+        <div style="flex:1"><div class="gc-name">Vegas</div><div class="gc-desc">Combined team score · birdie flips opponent · bump to double</div></div>
+        <div class="tog" id="tog-vegas"><div class="tog-k"></div></div>
+      </div>
+      <div class="gc-body">
+        <div class="bet-row">
+          <div class="bet-f"><label>$ / Point</label><input class="bet-in" type="number" id="v-pt" value="1" min="1"></div>
+          <div class="bet-f"><label>Bump</label><div style="height:38px;display:flex;align-items:center;font-size:13px;color:var(--g1);font-weight:600">2× current rate</div></div>
+        </div>
+        <div class="card-title" style="margin-bottom:6px">Teams (group members only)</div>
+        <div class="note" style="margin-bottom:8px">Birdie or eagle → opponent's score flips (45 becomes 54). Only losing team can bump between holes.</div>
+        <div id="vegas-team-builder" style="min-height:40px"></div>
       </div>
     </div>
 
@@ -515,6 +524,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--text);
         <div id="score-inputs"></div>
       </div>
     </div>
+    <div style="padding:8px 16px 0" id="vegas-panel"></div>
     <div style="padding:8px 16px 0" id="junk-panel"></div>
     <div style="padding:8px 16px 0" id="press-panel"></div>
     <div style="padding:8px 16px 0" id="status-panel"></div>
@@ -889,8 +899,9 @@ const NAV_SCREENS = new Set(['s-home','s-history','s-ledger','s-roster','s-tmt']
 let S = {
   you: {name:'',hdcp:0},
   opps: [],           // [{name,hdcp,type,id}]
-  games: {nassau:false,closeout:false,wolf:false,junk:false},
-  bets: {nassau:{f9:5,b9:5,overall:10}, closeout:{base:10,press:5}, wolf:{pt:2}, junk:{pt:1}},
+  games: {nassau:false,closeout:false,wolf:false,junk:false,vegas:false},
+  bets: {nassau:{f9:5,b9:5,overall:10}, closeout:{base:10,press:5}, wolf:{pt:2}, junk:{pt:1}, vegas:{pt:1}},
+  vegasTeams: {A:[], B:[]},
   nassauMode: 'h2h',   // 'h2h' or 'team'
   closeoutMode: 'h2h',
   nassauTeams: {A:[], B:[]},
@@ -1101,6 +1112,7 @@ function step1to2(){
   S.you.hdcp = parseFloat(document.getElementById('your-hdcp').value)||0;
   renderWolfOrder();
   renderPartnerParTeamBuilder();
+  renderVegasTeamBuilder();
   goTo('s-games');
 }
 
@@ -1112,6 +1124,7 @@ function toggleGame(g){
   document.getElementById('tog-'+g).classList.toggle('on', S.games[g]);
   document.getElementById('gc-'+g).classList.toggle('on', S.games[g]);
   if(g==='junk') renderPartnerParTeamBuilder();
+  if(g==='vegas') renderVegasTeamBuilder();
 }
 
 function setMatchMode(game, mode){
@@ -1265,6 +1278,61 @@ function setPPTeam(pid, team){
   renderPartnerParTeamBuilder();
 }
 
+function renderVegasTeamBuilder(){
+  const el = document.getElementById('vegas-team-builder');
+  if(!el) return;
+  const grpPlayers = [
+    {id:'you', name:S.you.name||'You', avClass:'av-you'},
+    ...S.opps.filter(o=>o.type!=='guest').map((o,i)=>({id:o.id, name:o.name, avClass:AV[i%AV.length]}))
+  ];
+  if(grpPlayers.length<4){
+    el.innerHTML=`<div style="font-size:12px;color:var(--r3)">Need 4+ group members for Vegas. Currently have ${grpPlayers.length}.</div>`;
+    return;
+  }
+  const teams = S.vegasTeams;
+  const tANames = teams.A.map(id=>grpPlayers.find(p=>p.id==id)?.name).filter(Boolean).join(' & ') || 'None';
+  const tBNames = teams.B.map(id=>grpPlayers.find(p=>p.id==id)?.name).filter(Boolean).join(' & ') || 'None';
+
+  el.innerHTML = `
+    ${grpPlayers.map((p,i)=>{
+      const inA = teams.A.some(id=>id==p.id);
+      const inB = teams.B.some(id=>id==p.id);
+      return `<div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--r0)">
+        <div class="av ${p.avClass}" style="width:28px;height:28px;font-size:10px;flex-shrink:0">${p.name[0].toUpperCase()}</div>
+        <span style="flex:1;font-size:14px;font-weight:500">${p.name}</span>
+        <div style="display:flex;gap:4px">
+          <button class="vegas-team-btn" data-pid="${p.id}" data-team="A"
+            style="width:36px;height:30px;border-radius:var(--rad-xs);border:1.5px solid ${inA?'var(--g2)':'var(--r1)'};background:${inA?'var(--g2)':'var(--white)'};color:${inA?'#fff':'var(--r4)'};font-size:11px;font-weight:700;cursor:pointer">A</button>
+          <button class="vegas-team-btn" data-pid="${p.id}" data-team="B"
+            style="width:36px;height:30px;border-radius:var(--rad-xs);border:1.5px solid ${inB?'#2563eb':'var(--r1)'};background:${inB?'#2563eb':'var(--white)'};color:${inB?'#fff':'var(--r4)'};font-size:11px;font-weight:700;cursor:pointer">B</button>
+        </div>
+      </div>`;
+    }).join('')}
+    <div style="display:flex;gap:8px;margin-top:8px">
+      <div style="flex:1;background:var(--gt);border-radius:var(--rad-xs);padding:6px 8px">
+        <div style="font-size:10px;font-weight:700;color:var(--g1);margin-bottom:3px">TEAM A</div>
+        <div style="font-size:12px;color:var(--g1)">${tANames}</div>
+      </div>
+      <div style="flex:1;background:#eff6ff;border-radius:var(--rad-xs);padding:6px 8px">
+        <div style="font-size:10px;font-weight:700;color:#1e40af;margin-bottom:3px">TEAM B</div>
+        <div style="font-size:12px;color:#1e40af">${tBNames}</div>
+      </div>
+    </div>`;
+
+  el.querySelectorAll('.vegas-team-btn').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const rawPid = btn.dataset.pid;
+      const pid = rawPid==='you'?'you':parseFloat(rawPid);
+      const team = btn.dataset.team;
+      const alreadyOn = S.vegasTeams[team].some(id=>id==pid);
+      S.vegasTeams.A = S.vegasTeams.A.filter(id=>id!=pid);
+      S.vegasTeams.B = S.vegasTeams.B.filter(id=>id!=pid);
+      if(!alreadyOn) S.vegasTeams[team].push(pid);
+      renderVegasTeamBuilder();
+    });
+  });
+}
+
 function renderWolfOrder(){
   const grp = [{id:'you',name:S.you.name||'You',avClass:'av-you'},
     ...S.opps.filter(o=>o.type!=='guest').map((o,i)=>({id:o.id,name:o.name,avClass:AV[i%AV.length]}))];
@@ -1299,13 +1367,15 @@ function wolfOrderMove(idx, dir){
 }
 
 function step2to3(){
-  if(!S.games.nassau&&!S.games.closeout&&!S.games.wolf&&!S.games.junk){ alert('Select at least one game.'); return; }
+  if(!S.games.nassau&&!S.games.closeout&&!S.games.wolf&&!S.games.junk&&!S.games.vegas){ alert('Select at least one game.'); return; }
   S.bets.nassau={f9:+document.getElementById('n-f9').value||5,b9:+document.getElementById('n-b9').value||5,overall:+document.getElementById('n-18').value||10};
   S.bets.closeout={base:+document.getElementById('c-base').value||10,press:+document.getElementById('c-press').value||5};
   S.bets.wolf.pt=+document.getElementById('w-pt').value||2;
   S.bets.junk.pt=+document.getElementById('j-pt').value||1;
+  if(S.games.vegas) S.bets.vegas.pt=+document.getElementById('v-pt').value||1;
   const wolfGrpCount=1+S.opps.filter(o=>o.type!=='guest').length;
   if(S.games.wolf&&wolfGrpCount<4){ alert('Wolf needs 4+ group members. You have '+wolfGrpCount+'.'); return; }
+  if(S.games.vegas&&(S.vegasTeams.A.length<2||S.vegasTeams.B.length<2)){ alert('Vegas needs 2 players on each team.'); return; }
   renderStrokes();
   goTo('s-strokes');
 }
@@ -1405,6 +1475,12 @@ function showConfirm(){
   }
   if(S.games.wolf) html+=`<div class="sum-row"><span class="muted">Wolf</span><span style="font-weight:600">$${S.bets.wolf.pt}/pt</span></div>`;
   if(S.games.junk) html+=`<div class="sum-row"><span class="muted">Junk</span><span style="font-weight:600">$${S.bets.junk.pt}/pt · 8 categories</span></div>`;
+  if(S.games.vegas){
+    const tA=S.vegasTeams.A.map(id=>id==='you'?S.you.name:S.opps.find(o=>o.id==id)?.name||'?').join(' & ');
+    const tB=S.vegasTeams.B.map(id=>id==='you'?S.you.name:S.opps.find(o=>o.id==id)?.name||'?').join(' & ');
+    html+=`<div class="sum-row"><span class="muted">Vegas</span><span style="font-weight:600">$${S.bets.vegas.pt}/pt · bump 2×</span></div>`;
+    html+=`<div class="sum-row" style="flex-direction:column;align-items:flex-start;gap:2px"><span style="font-size:12px;color:var(--r3)">A: ${tA||'—'}</span><span style="font-size:12px;color:var(--r3)">B: ${tB||'—'}</span></div>`;
+  }
   html+='<div class="sep"></div>';
   S.opps.forEach((o,i)=>{
     const m=S.matches[i];
@@ -1430,6 +1506,24 @@ function startRound(){
     junkCats:S.junkCats, partnerParTeams:S.partnerParTeams,
     nassauMode:S.nassauMode, closeoutMode:S.closeoutMode,
     nassauTeams:S.nassauTeams, closeoutTeams:S.closeoutTeams,
+    vegasTeams:S.vegasTeams,
+    vegasBumps:[],
+    // playerStrokes: {pid: agreedStrokes} — 0 means no strokes (scratch agreement)
+    // Built from matches: for each opponent, their agreed stroke count and direction
+    playerStrokes: (()=>{
+      const map = {'you': 0};
+      S.opps.forEach((o,i)=>{
+        const m = S.matches[i];
+        if(!m){ map[o.id]=0; return; }
+        if(m.strokes>0){
+          if(m.youGet) map['you'] = Math.max(map['you']||0, m.strokes);
+          else map[o.id] = m.strokes;
+        } else {
+          map[o.id] = 0;
+        }
+      });
+      return map;
+    })(),
     scores:Array(18).fill(null).map(()=>{const o={you:''};S.opps.forEach(op=>o[op.id]='');return o;}),
     wolfHoles:Array(18).fill(null).map(()=>({captainId:null,partnerId:null,isBlind:false,isLone:false,decided:false})),
     nassauPresses:S.opps.map(()=>({f9p1:null,f9p2:null,f9p3:null,b9p1:null,b9p2:null,b9p3:null})),
@@ -1506,25 +1600,12 @@ function teamBestNet(team, h){
   const sc = R.scores[h];
   let best = null;
   team.forEach(pid=>{
-    const raw = pid==='you' ? sc.you : sc[pid];
-    // Find strokes for this player
-    let strokes=0, youGet=false;
-    if(pid==='you'){
-      // "you" always compares as yourself — strokes come from match context
-      // In team mode we use the player's stored hdcp vs course
-      strokes = 0; youGet = false; // net = gross for now, hdcp applied via HCP index
-    } else {
-      const opp = R.opps.find(o=>o.id==pid);
-      if(opp){
-        strokes = opp.hdcp; youGet = true; // opp gets strokes vs scratch baseline
-      }
-    }
-    // Simple net: subtract stroke if HCP[h] <= player handicap
+    const raw = pid==='you'||pid=='you' ? sc.you : sc[pid];
     const gross = parseInt(raw);
     if(isNaN(gross)) return;
-    // Use player's own handicap for net calculation
-    const hdcp = pid==='you' ? R.you.hdcp : (R.opps.find(o=>o.id==pid)?.hdcp||0);
-    const net = gross - (HCP[h] <= hdcp ? 1 : 0);
+    // Use agreed strokes from playerStrokes map (set on strokes page, 0 = no strokes)
+    const strokes = R.playerStrokes ? (R.playerStrokes[pid] ?? R.playerStrokes[String(pid)] ?? 0) : 0;
+    const net = gross - (strokes > 0 && HCP[h] <= strokes ? 1 : 0);
     if(best===null || net<best) best=net;
   });
   return best;
@@ -1780,6 +1861,7 @@ function initScorecard(){
   renderHoleDots();
   renderWolfPanel();
   renderScoreInputs();
+  renderVegasPanel();
   renderJunkPanel();
   renderPressPanel();
   renderStatusPanel();
@@ -1843,6 +1925,7 @@ function changeScore(pid,delta){
   // Update last 3 wolf captain if needed
   if(R.games.wolf&&h>=15) updateLast3WolfCaptain(h);
   renderScoreInputs();
+  renderVegasPanel();
   renderJunkPanel();
   renderStatusPanel();
   renderHoleDots();
@@ -2013,6 +2096,193 @@ function renderPressPanel(){
 }
 
 function callPress(mi,key,hNum){ R.nassauPresses[mi][key]=hNum; saveR(); renderPressPanel(); renderStatusPanel(); }
+
+// ═══════════════════════════════════════════════════
+//  VEGAS ENGINE
+// ═══════════════════════════════════════════════════
+
+function vegasNetScore(pid, h){
+  const sc = R.scores[h];
+  const raw = pid==='you'||pid=='you' ? sc.you : sc[pid];
+  const gross = parseInt(raw);
+  if(isNaN(gross)) return null;
+  // Use agreed stroke count from the strokes page (0 = no strokes agreed)
+  const strokes = R.playerStrokes ? (R.playerStrokes[pid] ?? R.playerStrokes[String(pid)] ?? 0) : 0;
+  const strokeBonus = (strokes > 0 && HCP[h] <= strokes) ? 1 : 0;
+  return gross - strokeBonus;
+}
+
+function vegasCombo(netA, netB, par){
+  // Combine two net scores lowest-first into 2-digit number
+  if(netA===null||netB===null) return null;
+  const lo = Math.min(netA,netB), hi = Math.max(netA,netB);
+  return lo*10 + hi;
+}
+
+function calcVegas(){
+  if(!R.games.vegas) return null;
+  const teams = R.vegasTeams || {A:[],B:[]};
+  if(teams.A.length<2||teams.B.length<2) return null;
+
+  const perPt = R.bets.vegas?.pt || 1;
+  const bumps = R.vegasBumps || [];
+
+  // Get current $ rate at a given hole (bumps double the rate)
+  function rateAtHole(h){
+    let rate = perPt;
+    bumps.forEach(b=>{ if(b.hole<=h) rate=b.newRate; });
+    return rate;
+  }
+
+  const holeLog = [];
+  let cumPtsA = 0, cumPtsB = 0;
+  const holesPlayed = R.currentHole + 1;
+
+  for(let h=0;h<holesPlayed;h++){
+    const par = PAR[h];
+    const sc = R.scores[h];
+
+    // Net scores for each player
+    const [a1,a2] = teams.A.map(pid=>vegasNetScore(pid,h));
+    const [b1,b2] = teams.B.map(pid=>vegasNetScore(pid,h));
+    if(a1===null||a2===null||b1===null||b2===null){
+      holeLog.push({h, skip:true}); continue;
+    }
+
+    // Check for birdie or better on each team (using net scores)
+    const aBirdie = Math.min(a1,a2) <= par-1;
+    const bBirdie = Math.min(b1,b2) <= par-1;
+
+    // Build combo numbers
+    let comboA = vegasCombo(a1,a2,par);
+    let comboB = vegasCombo(b1,b2,par);
+
+    // Birdie flips opponent's number
+    // Both birdie → both flip → cancel out (no flip)
+    if(aBirdie && !bBirdie){
+      // Team A birdied → flip Team B's combo
+      const bLo = comboB % 10, bHi = Math.floor(comboB/10);
+      comboB = bLo*10 + bHi;
+    } else if(bBirdie && !aBirdie){
+      // Team B birdied → flip Team A's combo
+      const aLo = comboA % 10, aHi = Math.floor(comboA/10);
+      comboA = aLo*10 + aHi;
+    }
+    // Both birdie → no flip (cancel)
+
+    const diff = Math.abs(comboA - comboB);
+    const rate = rateAtHole(h);
+
+    if(comboA < comboB){
+      cumPtsA += diff;
+      holeLog.push({h, comboA, comboB, winner:'A', diff, aBirdie, bBirdie, flipped:aBirdie&&!bBirdie?'B':bBirdie&&!aBirdie?'A':null, rate});
+    } else if(comboB < comboA){
+      cumPtsB += diff;
+      holeLog.push({h, comboA, comboB, winner:'B', diff, aBirdie, bBirdie, flipped:aBirdie&&!bBirdie?'B':bBirdie&&!aBirdie?'A':null, rate});
+    } else {
+      holeLog.push({h, comboA, comboB, winner:'tie', diff:0, aBirdie, bBirdie, rate});
+    }
+  }
+
+  // Payout: point difference × $ rate at each hole
+  // Accumulate dollar amounts using the rate active at each hole
+  let dollarA=0, dollarB=0;
+  holeLog.forEach(e=>{
+    if(e.skip||e.winner==='tie') return;
+    const dollars = e.diff * e.rate;
+    if(e.winner==='A') dollarA+=dollars;
+    else dollarB+=dollars;
+  });
+
+  const youOnA = teams.A.some(id=>id==='you'||id=='you');
+  const myDollars = youOnA ? dollarA-dollarB : dollarB-dollarA;
+  const currentRate = rateAtHole(R.currentHole);
+
+  return {holeLog, cumPtsA, cumPtsB, dollarA, dollarB, myDollars,
+          teams, perPt, currentRate, bumps, youOnA};
+}
+
+function callVegasBump(h){
+  if(!R.vegasBumps) R.vegasBumps=[];
+  const vr = calcVegas();
+  if(!vr) return;
+  const newRate = vr.currentRate * 2;
+  R.vegasBumps.push({hole:h, newRate});
+  saveR(); renderVegasPanel(); renderStatusPanel();
+}
+
+function renderVegasPanel(){
+  const el = document.getElementById('vegas-panel');
+  if(!R||!R.games.vegas){el.innerHTML='';return;}
+  const vr = calcVegas();
+  if(!vr){el.innerHTML='';return;}
+
+  const h = R.currentHole;
+  const teams = vr.teams;
+  const tANames = teams.A.map(id=>id==='you'||id=='you'?R.you.name:R.opps.find(o=>o.id==id)?.name||'?').join(' & ');
+  const tBNames = teams.B.map(id=>id==='you'||id=='you'?R.you.name:R.opps.find(o=>o.id==id)?.name||'?').join(' & ');
+
+  // Net running differential — positive = Team A ahead, negative = Team B ahead
+  const netPts = vr.cumPtsA - vr.cumPtsB;
+  const netLeader = netPts > 0 ? `Team A +${netPts}` : netPts < 0 ? `Team B +${Math.abs(netPts)}` : 'Tied';
+  const netColor = vr.youOnA
+    ? (netPts > 0 ? 'var(--g2)' : netPts < 0 ? 'var(--red)' : 'var(--r3)')
+    : (netPts < 0 ? 'var(--g2)' : netPts > 0 ? 'var(--red)' : 'var(--r3)');
+
+  // Show last 3 completed holes as mini log
+  const completedHoles = vr.holeLog.filter(e=>!e.skip && e.h < h);
+  const recentHoles = completedHoles.slice(-3);
+  let holeInfo = '';
+  if(recentHoles.length){
+    holeInfo = `<div style="border-top:1px solid var(--r1);padding-top:8px;margin-top:4px">
+      <div style="font-size:10px;font-weight:600;color:var(--r3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:4px">Recent Holes</div>
+      ${recentHoles.map(e=>{
+        const flipNote = e.flipped ? ' 🔄' : '';
+        const wColor = e.winner==='A'?'var(--g2)':e.winner==='tie'?'var(--r3)':'var(--red)';
+        const wLabel = e.winner==='tie'?'Tie':
+          `Team ${e.winner} +${e.diff}pts`;
+        return `<div style="display:flex;justify-content:space-between;font-size:12px;padding:2px 0">
+          <span style="color:var(--r4)">H${e.h+1}: A=${e.comboA} vs B=${e.comboB}${flipNote}</span>
+          <span style="font-weight:600;color:${wColor}">${wLabel}</span>
+        </div>`;
+      }).join('')}
+    </div>`;
+  }
+
+  // Bump button — only show to losing team
+  const youWinning = vr.myDollars >= 0;
+  const canBump = !youWinning;
+  const bumpBtn = canBump ? `<button onclick="callVegasBump(${h})"
+    style="padding:5px 12px;border-radius:20px;border:1.5px solid var(--red);background:var(--red-p);
+    color:var(--red);font-size:12px;font-weight:600;cursor:pointer;margin-top:8px">
+    🔺 Bump ($${vr.currentRate}/pt → $${vr.currentRate*2}/pt)
+  </button>` : '';
+
+  const nc = vr.myDollars>0?'var(--g2)':vr.myDollars<0?'var(--red)':'var(--r3)';
+  const ns = vr.myDollars===0?'$0':vr.myDollars>0?`+$${vr.myDollars}`:`-$${Math.abs(vr.myDollars)}`;
+
+  el.innerHTML=`<div class="score-card" style="border-color:#c7d2fe">
+    <div class="score-hdr" style="display:flex;align-items:center;justify-content:space-between">
+      <span>🎲 Vegas · $${vr.currentRate}/pt${vr.bumps.length>0?' · 🔺 Bumped':''}</span>
+      <span style="font-family:'DM Serif Display',serif;font-size:15px;color:${nc}">${ns}</span>
+    </div>
+    <div style="padding:10px 14px">
+      <div style="background:var(--r0);border-radius:var(--rad-xs);padding:8px 10px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center">
+        <div>
+          <div style="font-size:10px;font-weight:600;color:var(--r3);text-transform:uppercase;letter-spacing:.07em">Running Total (all holes)</div>
+          <div style="font-size:16px;font-weight:700;color:${netColor};margin-top:2px">${netLeader}</div>
+        </div>
+        <div style="text-align:right">
+          <div style="font-size:10px;font-weight:600;color:var(--r3);text-transform:uppercase;letter-spacing:.07em">Net Pts</div>
+          <div style="font-family:'DM Serif Display',serif;font-size:20px;color:${netColor}">${netPts>0?'+':''}${netPts}</div>
+        </div>
+      </div>
+      <div style="font-size:11px;color:var(--r3);margin-bottom:6px">A: ${tANames} &nbsp;·&nbsp; B: ${tBNames}</div>
+      ${holeInfo}
+      ${bumpBtn}
+    </div>
+  </div>`;
+}
 
 // Status panel
 // ═══════════════════════════════════════════════════
@@ -2466,6 +2736,27 @@ function renderStatusPanel(){
     </div>`;
   }
 
+  // Vegas summary
+  const vr=calcVegas();
+  if(vr&&R.games.vegas){
+    const netPts = vr.cumPtsA - vr.cumPtsB;
+    const netLeader = netPts > 0 ? `Team A +${netPts}pts` : netPts < 0 ? `Team B +${Math.abs(netPts)}pts` : 'Tied';
+    const nc=vr.myDollars>0?'var(--g2)':vr.myDollars<0?'var(--red)':'var(--r3)';
+    const ns=vr.myDollars===0?'$0':vr.myDollars>0?`+$${vr.myDollars}`:`-$${Math.abs(vr.myDollars)}`;
+    const tANames=vr.teams.A.map(id=>id==='you'||id=='you'?R.you.name:R.opps.find(o=>o.id==id)?.name||'?').join(' & ');
+    const tBNames=vr.teams.B.map(id=>id==='you'||id=='you'?R.you.name:R.opps.find(o=>o.id==id)?.name||'?').join(' & ');
+    html+=`<div class="status-card" style="border-color:#c7d2fe">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+        <span style="font-size:14px;font-weight:600">🎲 Vegas · $${vr.currentRate}/pt${vr.bumps.length?` · 🔺×${vr.bumps.length}`:''}</span>
+        <span style="font-family:'DM Serif Display',serif;font-size:16px;color:${nc}">${ns}</span>
+      </div>
+      <div style="display:flex;align-items:center;justify-content:space-between">
+        <span style="font-size:13px;font-weight:600;color:${nc}">${netLeader}</span>
+        <span style="font-size:11px;color:var(--r3)">A: ${tANames} · B: ${tBNames}</span>
+      </div>
+    </div>`;
+  }
+
   el.innerHTML=html||'<div style="padding:14px;text-align:center;color:var(--r3);font-size:14px">Enter scores above to see live status</div>';
 }
 
@@ -2702,6 +2993,62 @@ function renderResults(){
     </div>`;
   }
 
+  // Vegas results
+  const vr=calcVegas();
+  if(vr&&R.games.vegas){
+    yourNet+=vr.myDollars;
+    const nc=vr.myDollars>=0?'var(--g2)':'var(--red)';
+    const tANames=vr.teams.A.map(id=>id==='you'||id=='you'?R.you.name:R.opps.find(o=>o.id==id)?.name||'?').join(' & ');
+    const tBNames=vr.teams.B.map(id=>id==='you'||id=='you'?R.you.name:R.opps.find(o=>o.id==id)?.name||'?').join(' & ');
+    // Hole-by-hole log
+    let holeRows='';
+    vr.holeLog.forEach(e=>{
+      if(e.skip||e.winner==='tie') return;
+      const flipNote=e.flipped?` 🔄`:'';
+      const wColor=e.winner==='A'?'var(--g2)':'var(--red)';
+      holeRows+=`<div class="res-row"><span style="color:var(--r4)">H${e.h+1} · A=${e.comboA} vs B=${e.comboB}${flipNote}</span><span style="font-weight:600;color:${wColor}">Team ${e.winner} +${e.diff}pts ($${e.diff*e.rate})</span></div>`;
+    });
+    // Bump log
+    let bumpRows='';
+    vr.bumps.forEach(b=>{
+      bumpRows+=`<div class="res-row"><span style="color:var(--r4)">H${b.hole+1} · Bump called</span><span style="font-weight:600;color:#7c3aed">$${b.newRate}/pt</span></div>`;
+    });
+    const wt = vr.myDollars>0?`Team ${vr.youOnA?'A':'A'} wins $${vr.myDollars}`:vr.myDollars<0?`Team ${vr.youOnA?'B':'A'} wins $${Math.abs(vr.myDollars)}`:'All square';
+    html+=`<div class="res-card">
+      <div class="res-hdr" style="background:#eef2ff;border-bottom-color:#c7d2fe">
+        <div>
+          <div style="font-size:15px;font-weight:600;color:#3730a3">🎲 Vegas · $${vr.perPt}/pt base${vr.bumps.length?` · 🔺${vr.bumps.length} bump${vr.bumps.length>1?'s':''}`:''}
+          </div>
+          <div style="font-size:11px;color:var(--r3);margin-top:2px">A: ${tANames} · B: ${tBNames}</div>
+        </div>
+        <span style="font-family:'DM Serif Display',serif;font-size:18px;color:${nc}">${vr.myDollars>=0?'+$':'-$'}${Math.abs(vr.myDollars)}</span>
+      </div>
+      <div style="padding:8px 14px">
+        <div style="display:flex;gap:8px;margin-bottom:8px">
+          <div style="flex:1;text-align:center;background:var(--gt);border-radius:var(--rad-xs);padding:6px">
+            <div style="font-size:10px;font-weight:700;color:var(--g1)">TEAM A</div>
+            <div style="font-family:'DM Serif Display',serif;font-size:20px;color:var(--g1)">${vr.cumPtsA}pts</div>
+            <div style="font-size:11px;color:var(--r3)">$${vr.dollarA} earned</div>
+          </div>
+          <div style="flex:1;text-align:center;background:#eff6ff;border-radius:var(--rad-xs);padding:6px">
+            <div style="font-size:10px;font-weight:700;color:#1e40af">TEAM B</div>
+            <div style="font-family:'DM Serif Display',serif;font-size:20px;color:#1e40af">${vr.cumPtsB}pts</div>
+            <div style="font-size:11px;color:var(--r3)">$${vr.dollarB} earned</div>
+          </div>
+        </div>
+        <div style="background:var(--r0);border-radius:var(--rad-xs);padding:8px;text-align:center;margin-bottom:6px">
+          <div style="font-size:10px;font-weight:600;color:var(--r3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:2px">Net Differential</div>
+          <div style="font-size:18px;font-weight:700;color:${(vr.cumPtsA-vr.cumPtsB)>0?'var(--g2)':(vr.cumPtsA-vr.cumPtsB)<0?'var(--red)':'var(--r3)'}">
+            ${vr.cumPtsA===vr.cumPtsB?'Tied':vr.cumPtsA>vr.cumPtsB?`Team A +${vr.cumPtsA-vr.cumPtsB}pts`:`Team B +${vr.cumPtsB-vr.cumPtsA}pts`}
+          </div>
+        </div>
+        <div style="padding:6px 0;font-size:12px;color:var(--r4);font-style:italic;text-align:center">${wt}</div>
+      </div>
+      ${holeRows?`<div style="padding:8px 14px;background:var(--r0)"><div style="font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--r3);margin-bottom:5px">Hole Log</div>${holeRows}</div>`:''}
+      ${bumpRows?`<div style="padding:8px 14px;background:#f5f3ff"><div style="font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:#7c3aed;margin-bottom:5px">Bumps</div>${bumpRows}</div>`:''}
+    </div>`;
+  }
+
   const dc=yourNet>=0?'var(--gold)':'#ff8080';
   const ds=yourNet>=0?`+$${yourNet}`:`-$${Math.abs(yourNet)}`;
   html+=`<div class="day-total"><span style="color:rgba(255,255,255,.7)">Your Day Net</span><span style="font-family:'DM Serif Display',serif;font-size:28px;color:${dc}">${ds}</span></div>`;
@@ -2745,9 +3092,11 @@ function finishRound(){
   });
   if(wp){ dayNet+=wp.myNet; if(wp.myNet!==0) breakdown.push({label:'Wolf',net:wp.myNet}); }
   if(jr){ dayNet+=jr.myNet; if(jr.myNet!==0) breakdown.push({label:'Junk',net:jr.myNet}); }
+  const vr=calcVegas();
+  if(vr){ dayNet+=vr.myDollars; if(vr.myDollars!==0) breakdown.push({label:'Vegas',net:vr.myDollars}); }
 
   const games=Object.entries(R.games).filter(([,v])=>v).map(([k])=>
-    k==='nassau'?'Nassau':k==='closeout'?'Closeout':k==='wolf'?'Wolf':'Junk').join(', ');
+    k==='nassau'?'Nassau':k==='closeout'?'Closeout':k==='wolf'?'Wolf':k==='junk'?'Junk':'Vegas').join(', ');
 
   // Save round
   DB.rounds.unshift({date:R.date,course:'Musket Ridge GC',players:`${R.you.name} + ${R.opps.length}`,games,net:dayNet,breakdown,scores:R.scores,opps:R.opps,you:R.you,matches:R.matches,bets:R.bets,wolfHoles:R.wolfHoles,nassauPresses:R.nassauPresses,junkHoles:R.junkHoles});
