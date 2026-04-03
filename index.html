@@ -23,14 +23,14 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--text);
   min-height:100vh;max-width:430px;margin:0 auto;overflow-x:hidden}
 
 /* ─── SCREENS ────────────────────────────────────────── */
-.screen{display:none;min-height:100vh;flex-direction:column}
+.screen{display:none;flex-direction:column;position:fixed;top:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;height:100%;overflow:hidden}
 .screen.active{display:flex;animation:fadeUp .2s ease}
 @keyframes fadeUp{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
-.scroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch}
-.has-nav{padding-bottom:72px}
+.scroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;min-height:0;overscroll-behavior:contain}
+.has-nav{padding-bottom:calc(100px + env(safe-area-inset-bottom))}
 
 /* ─── HEADER ─────────────────────────────────────────── */
-.hdr{background:var(--g1);padding:50px 18px 20px;position:sticky;top:0;z-index:20}
+.hdr{background:var(--g1);padding:50px 18px 20px;flex-shrink:0;z-index:20}
 .hdr-eye{font-size:10px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;
   color:rgba(255,255,255,.5);margin-bottom:4px}
 .hdr h1{font-family:'DM Serif Display',serif;font-size:26px;color:#fff;line-height:1.15}
@@ -162,7 +162,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--text);
 .nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;
   cursor:pointer;padding:4px 0;border:none;background:none;font-family:'DM Sans',sans-serif}
 .nav-ico{font-size:20px;line-height:1}
-.nav-lbl{font-size:10px;font-weight:500;color:var(--r3)}
+.nav-lbl{font-size:9px;font-weight:500;color:var(--r3)}
 .nav-btn.active .nav-lbl{color:var(--g2)}
 
 /* ─── HOME ───────────────────────────────────────────── */
@@ -186,7 +186,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--text);
 .rnd-net{font-family:'DM Serif Display',serif;font-size:20px}
 
 /* ─── SCORECARD ──────────────────────────────────────── */
-.sc-hdr{background:var(--g1);padding:44px 16px 12px;position:sticky;top:0;z-index:20}
+.sc-hdr{background:var(--g1);padding:44px 16px 12px;flex-shrink:0;z-index:20}
 .sc-eye{font-size:10px;letter-spacing:.1em;text-transform:uppercase;
   color:rgba(255,255,255,.5);margin-bottom:2px}
 .sc-info{font-family:'DM Serif Display',serif;font-size:20px;color:#fff}
@@ -246,7 +246,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--text);
 /* ─── TOURNAMENT ─────────────────────────────────────── */
 .tmt-hub-card{background:var(--g1);border-radius:var(--rad);padding:18px;
   margin-bottom:14px;color:#fff}
-.lb-hdr{background:var(--g1);padding:44px 16px 12px;position:sticky;top:0;z-index:20}
+.lb-hdr{background:var(--g1);padding:44px 16px 12px;flex-shrink:0;z-index:20}
 .lb-table{background:var(--white);border-radius:var(--rad);border:1px solid var(--r1);
   overflow:hidden;box-shadow:var(--sh-s);margin-bottom:14px}
 .lb-col-hdr{display:flex;padding:7px 14px;background:var(--g1);font-size:10px;
@@ -288,12 +288,13 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--text);
     <div class="home-logo">2<span>DA</span></div>
     <div class="home-tag">2 Down Auto · Golf Betting</div>
   </div>
-  <div class="scroll has-nav body" style="padding-top:18px">
+  <div class="scroll body" style="padding-top:18px;padding-bottom:calc(100px + env(safe-area-inset-bottom))"  id="home-scroll">
     <div class="stat-row" id="home-stats">
       <div class="stat"><div class="stat-n" id="h-rounds">0</div><div class="stat-l">Rounds</div></div>
       <div class="stat"><div class="stat-n" id="h-net" style="color:var(--g2)">$0</div><div class="stat-l">Season Net</div></div>
       <div class="stat"><div class="stat-n" id="h-pct">—</div><div class="stat-l">Win Rate</div></div>
     </div>
+    <div id="h-course-selector" style="margin-bottom:14px"></div>
     <div class="sec-lbl">Recent Rounds</div>
     <div id="home-rounds"></div>
     <div id="home-bar" style="margin-top:16px">
@@ -314,7 +315,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--text);
       <div class="p-row" style="border:none;padding:4px 0">
         <div class="av av-you" style="width:38px;height:38px;font-size:14px" id="your-av">Y</div>
         <div style="flex:1"><input type="text" style="width:100%;border:1.5px solid var(--r1);border-radius:var(--rad-s);height:44px;padding:0 12px;font-size:15px;font-family:'DM Sans',sans-serif;outline:none" id="your-name" placeholder="Your name" oninput="document.getElementById('your-av').textContent=this.value?this.value[0].toUpperCase():'Y'"></div>
-        <input type="number" style="width:66px;border:1.5px solid var(--r1);border-radius:var(--rad-s);height:44px;padding:0 8px;font-size:15px;font-family:'DM Sans',sans-serif;text-align:center;outline:none" id="your-hdcp" placeholder="Hdcp" min="0" max="36">
+        <input type="number" style="width:76px;border:1.5px solid var(--r1);border-radius:var(--rad-s);height:44px;padding:0 8px;font-size:15px;font-family:'DM Sans',sans-serif;text-align:center;outline:none" id="your-hdcp" placeholder="Hdcp" min="0" max="36">
       </div>
     </div>
     <div class="card">
@@ -355,11 +356,10 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--text);
         </div>
         <div class="card-title" style="margin-bottom:6px">Format</div>
         <div style="display:flex;gap:6px;margin-bottom:10px">
-          <button id="n-mode-h2h" onclick="setMatchMode('nassau','h2h')"
-            style="flex:1;height:34px;border-radius:20px;border:1.5px solid var(--g2);background:var(--g2);color:#fff;font-size:12px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif">👤 Head-to-Head</button>
           <button id="n-mode-team" onclick="setMatchMode('nassau','team')"
-            style="flex:1;height:34px;border-radius:20px;border:1.5px solid var(--r1);background:var(--white);color:var(--r4);font-size:12px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif">👥 Team Match</button>
+            style="flex:1;height:34px;border-radius:20px;border:1.5px solid var(--r1);background:var(--white);color:var(--r4);font-size:12px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif">👥 + Add Team Match</button>
         </div>
+        <div style="font-size:11px;color:var(--r3);margin-bottom:8px">Individual 1v1 matches are always tracked per opponent below. Toggle team match to also run a team game simultaneously.</div>
         <div id="nassau-team-builder" style="display:none"></div>
         <div class="note"><strong>Press:</strong> Call a press on the scorecard when down 2+. Each press pays same as original bet.</div>
       </div>
@@ -379,11 +379,10 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--text);
         </div>
         <div class="card-title" style="margin-bottom:6px">Format</div>
         <div style="display:flex;gap:6px;margin-bottom:10px">
-          <button id="c-mode-h2h" onclick="setMatchMode('closeout','h2h')"
-            style="flex:1;height:34px;border-radius:20px;border:1.5px solid var(--g2);background:var(--g2);color:#fff;font-size:12px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif">👤 Head-to-Head</button>
           <button id="c-mode-team" onclick="setMatchMode('closeout','team')"
-            style="flex:1;height:34px;border-radius:20px;border:1.5px solid var(--r1);background:var(--white);color:var(--r4);font-size:12px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif">👥 Team Match</button>
+            style="flex:1;height:34px;border-radius:20px;border:1.5px solid var(--r1);background:var(--white);color:var(--r4);font-size:12px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif">👥 + Add Team Match</button>
         </div>
+        <div style="font-size:11px;color:var(--r3);margin-bottom:8px">Individual matches are always tracked per opponent. Toggle team match to also run simultaneously.</div>
         <div id="closeout-team-builder" style="display:none"></div>
         <div style="font-size:12px;color:var(--r3)">Press auto-triggers when down more holes than remain. Press pays half the base.</div>
       </div>
@@ -467,6 +466,90 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--text);
       </div>
     </div>
 
+    <!-- Quota -->
+    <div class="gc" id="gc-quota">
+      <div class="gc-hdr" onclick="toggleGame('quota')">
+        <div class="gc-icon" style="background:#fdf4ff">🎯</div>
+        <div style="flex:1"><div class="gc-name">Quota</div><div class="gc-desc">Point quota vs handicap · F9 · B9 · Total leaderboard</div></div>
+        <div class="tog" id="tog-quota"><div class="tog-k"></div></div>
+      </div>
+      <div class="gc-body">
+        <!-- Point Values -->
+        <div class="card-title" style="margin-bottom:6px">Point Values (editable)</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr 1fr;gap:6px;margin-bottom:12px">
+          <div style="text-align:center">
+            <div style="font-size:10px;color:var(--r3);margin-bottom:3px">Triple+</div>
+            <input class="bet-in" type="number" id="q-triple" value="-1" style="width:100%;text-align:center">
+          </div>
+          <div style="text-align:center">
+            <div style="font-size:10px;color:var(--r3);margin-bottom:3px">Double</div>
+            <input class="bet-in" type="number" id="q-double" value="0" style="width:100%;text-align:center">
+          </div>
+          <div style="text-align:center">
+            <div style="font-size:10px;color:var(--r3);margin-bottom:3px">Bogey</div>
+            <input class="bet-in" type="number" id="q-bogey" value="1" style="width:100%;text-align:center">
+          </div>
+          <div style="text-align:center">
+            <div style="font-size:10px;color:var(--r3);margin-bottom:3px">Par</div>
+            <input class="bet-in" type="number" id="q-par" value="2" style="width:100%;text-align:center">
+          </div>
+          <div style="text-align:center">
+            <div style="font-size:10px;color:var(--r3);margin-bottom:3px">Birdie</div>
+            <input class="bet-in" type="number" id="q-birdie" value="3" style="width:100%;text-align:center">
+          </div>
+          <div style="text-align:center">
+            <div style="font-size:10px;color:var(--r3);margin-bottom:3px">Eagle</div>
+            <input class="bet-in" type="number" id="q-eagle" value="4" style="width:100%;text-align:center">
+          </div>
+        </div>
+        <!-- Payout Format -->
+        <div class="card-title" style="margin-bottom:6px">Payout Format</div>
+        <div style="display:flex;gap:6px;margin-bottom:10px">
+          <button id="qp-overall" onclick="setQuotaPayout('overall')"
+            style="flex:1;height:34px;border-radius:20px;border:1.5px solid var(--g2);background:var(--g2);color:#fff;font-size:12px;font-weight:600;cursor:pointer">🏆 Overall</button>
+          <button id="qp-nassau" onclick="setQuotaPayout('nassau')"
+            style="flex:1;height:34px;border-radius:20px;border:1.5px solid var(--r1);background:var(--white);color:var(--r4);font-size:12px;font-weight:600;cursor:pointer">🔀 F9/B9/Total</button>
+        </div>
+        <div id="quota-payout-overall" style="margin-bottom:10px">
+          <div class="note" style="margin-bottom:8px">Pay top finishers from a prize pool. Set $ per spot.</div>
+          <div id="quota-spots-builder">
+            <div style="display:flex;gap:8px;align-items:center;margin-bottom:6px">
+              <label style="font-size:13px;font-weight:500;flex:1">Spots paid</label>
+              <input class="bet-in" type="number" id="q-spots" value="3" min="1" max="6" style="width:60px;text-align:center" onchange="renderQuotaSpotsBuilder()">
+            </div>
+            <div id="quota-spots-rows"></div>
+          </div>
+        </div>
+        <div id="quota-payout-nassau" style="display:none;margin-bottom:10px">
+          <div class="bet-row">
+            <div class="bet-f"><label>F9 Winner $</label><input class="bet-in" type="number" id="q-f9" value="10" min="1"></div>
+            <div class="bet-f"><label>B9 Winner $</label><input class="bet-in" type="number" id="q-b9" value="10" min="1"></div>
+            <div class="bet-f"><label>Total Winner $</label><input class="bet-in" type="number" id="q-total" value="20" min="1"></div>
+          </div>
+        </div>
+        <!-- Team Option -->
+        <div class="card-title" style="margin-bottom:6px">Format</div>
+        <div style="display:flex;gap:6px;margin-bottom:8px">
+          <button id="qt-individual" onclick="setQuotaFormat('individual')"
+            style="flex:1;height:34px;border-radius:20px;border:1.5px solid var(--g2);background:var(--g2);color:#fff;font-size:12px;font-weight:600;cursor:pointer">👤 Individual</button>
+          <button id="qt-team" onclick="setQuotaFormat('team')"
+            style="flex:1;height:34px;border-radius:20px;border:1.5px solid var(--r1);background:var(--white);color:var(--r4);font-size:12px;font-weight:600;cursor:pointer">👥 Team</button>
+        </div>
+        <div id="quota-team-options" style="display:none;margin-bottom:8px">
+          <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px">
+            <label style="font-size:13px;font-weight:500;flex:1">Team size</label>
+            <select id="q-team-size" class="bet-in" style="width:80px" onchange="renderQuotaTeamBuilder()">
+              <option value="2">2</option>
+              <option value="3">3</option>
+              <option value="4">4</option>
+            </select>
+          </div>
+          <div class="note" style="margin-bottom:8px">All players' scores count toward the team quota total.</div>
+          <div id="quota-team-builder"></div>
+        </div>
+      </div>
+    </div>
+
     <!-- 9 Point (stub) -->
     <div class="gc gc-soon">
       <div class="gc-hdr">
@@ -525,11 +608,12 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--text);
       </div>
     </div>
     <div style="padding:8px 16px 0" id="vegas-panel"></div>
+    <div style="padding:8px 16px 0" id="quota-panel"></div>
     <div style="padding:8px 16px 0" id="junk-panel"></div>
     <div style="padding:8px 16px 0" id="press-panel"></div>
     <div style="padding:8px 16px 0" id="status-panel"></div>
   </div>
-  <div class="bar" style="position:sticky;bottom:0">
+  <div class="bar" style="flex-shrink:0">
     <div style="display:flex;gap:8px">
       <button class="btn btn-s" style="flex:1" id="btn-prev" onclick="prevHole()">← Prev</button>
       <button class="btn btn-p" style="flex:2" id="btn-next" onclick="nextHole()">Next →</button>
@@ -545,10 +629,10 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--text);
   <div class="hdr">
     <div class="hdr-eye" id="res-eye">Round Results</div>
     <h1>Final Payouts</h1>
-    <p>Musket Ridge GC</p>
+    <p id="res-course">Musket Ridge GC</p>
   </div>
   <div class="scroll body" id="results-body" style="padding-bottom:110px"></div>
-  <div class="bar" style="position:sticky;bottom:0">
+  <div class="bar" style="flex-shrink:0">
     <button class="btn btn-p" onclick="finishRound()" style="margin-bottom:8px">Save Round & Done ✓</button>
     <button class="btn btn-s" onclick="goTo('s-card')" style="margin-bottom:8px">← Back to Scorecard</button>
     <button class="btn btn-s" onclick="abandonFromResults()" style="border-color:var(--red);color:var(--red)">Abandon Round — Don't Save</button>
@@ -564,7 +648,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--text);
     <h1>Round History</h1>
     <p id="hist-sub">Loading...</p>
   </div>
-  <div class="scroll has-nav body" id="hist-body"></div>
+  <div class="scroll body" style="padding-bottom:calc(100px + env(safe-area-inset-bottom))" id="hist-body"></div>
 </div>
 
 <!-- ══════════════════════════════════════════
@@ -576,7 +660,8 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--text);
     <h1>Ledger</h1>
     <p>Head-to-head records & money owed</p>
   </div>
-  <div class="scroll has-nav body" id="ledger-body"></div>
+  <div id="ledger-static" style="flex-shrink:0;padding:12px 18px 0"></div>
+  <div class="scroll body" style="padding-top:8px;padding-bottom:calc(100px + env(safe-area-inset-bottom))" id="ledger-body"></div>
 </div>
 
 <!-- ══════════════════════════════════════════
@@ -588,18 +673,64 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--text);
     <h1>Player Roster</h1>
     <p>Your master player list</p>
   </div>
-  <div class="scroll has-nav body" id="roster-body"></div>
+  <div class="scroll body" style="padding-bottom:calc(100px + env(safe-area-inset-bottom))" id="roster-body"></div>
   <div class="bar" style="padding-bottom:calc(14px + 58px + env(safe-area-inset-bottom))">
     <button class="btn btn-p" onclick="openModal('m-add-roster-player')">+ Add Player to Roster</button>
   </div>
 </div>
 
 <!-- ══════════════════════════════════════════
-     TOURNAMENT HUB
+     COURSES
 ══════════════════════════════════════════ -->
+<div id="s-courses" class="screen">
+  <div class="hdr">
+    <div class="hdr-eye">Golf Courses</div>
+    <h1>Courses</h1>
+    <p>Saved courses with par &amp; handicap rankings</p>
+  </div>
+  <div class="scroll body" style="padding-bottom:calc(100px + env(safe-area-inset-bottom))" id="courses-body"></div>
+  <div class="bar" style="padding-bottom:calc(14px + 58px + env(safe-area-inset-bottom))">
+    <button class="btn btn-p" onclick="openAddCourse()">+ Add Course</button>
+  </div>
+</div>
+
+<!-- Course Picker Sheet -->
+<div class="overlay" id="m-course-picker" onclick="if(event.target===this)closeModal('m-course-picker')">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <h3>Select Course</h3>
+    <div id="course-picker-list" style="margin-bottom:12px;max-height:55vh;overflow-y:auto"></div>
+    <button class="btn btn-s" onclick="closeModal('m-course-picker');openAddCourse()">+ Add New Course</button>
+    <button class="btn btn-s" onclick="closeModal('m-course-picker')" style="margin-top:8px">Cancel</button>
+  </div>
+</div>
+
+
+<div class="overlay" id="m-edit-course" onclick="if(event.target===this)closeModal('m-edit-course')">
+  <div class="modal" style="max-height:90vh;overflow-y:auto">
+    <div class="modal-handle"></div>
+    <h3 id="course-modal-title">Add Course</h3>
+    <input type="hidden" id="course-idx">
+    <div class="field"><label>Course Name</label><input type="text" id="course-name" placeholder="e.g. Musket Ridge GC" maxlength="40"></div>
+    <div class="field"><label>City / State</label><input type="text" id="course-location" placeholder="e.g. Myersville, MD" maxlength="40"></div>
+    <div class="field"><label>Total Yardage</label><input type="number" id="course-yardage" placeholder="6900" min="3000" max="9000"></div>
+    <div style="font-size:12px;font-weight:600;color:var(--g1);margin-bottom:8px;padding-top:4px">Hole-by-Hole Par &amp; Handicap Rank</div>
+    <div style="display:grid;grid-template-columns:40px 1fr 1fr 1fr;gap:4px;margin-bottom:6px;font-size:10px;font-weight:600;color:var(--r3);text-transform:uppercase;letter-spacing:.07em">
+      <span>Hole</span><span style="text-align:center">Par</span><span style="text-align:center">HCP</span><span style="text-align:center">Yds</span>
+    </div>
+    <div id="course-hole-inputs"></div>
+    <div style="display:flex;gap:8px;margin-top:14px">
+      <button class="btn btn-p" onclick="saveCourse()" style="flex:1">Save Course</button>
+      <button class="btn btn-s" onclick="closeModal('m-edit-course')" style="flex:1">Cancel</button>
+    </div>
+    <button class="btn btn-red" id="course-delete-btn" style="margin-top:8px;display:none" onclick="deleteCourse()">Delete Course</button>
+  </div>
+</div>
+
+
 <div id="s-tmt" class="screen">
   <div class="hdr"><div class="hdr-eye">2DA Tournaments</div><h1>Tournament</h1></div>
-  <div class="scroll has-nav body" id="tmt-hub-body"></div>
+  <div class="scroll body" style="padding-bottom:calc(100px + env(safe-area-inset-bottom))" id="tmt-hub-body"></div>
 </div>
 
 <!-- ══════════════════════════════════════════
@@ -691,7 +822,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--text);
     <div style="display:flex;gap:6px" id="t-tabs"></div>
   </div>
   <div class="scroll" style="padding:14px;padding-bottom:90px" id="t-lb-body"></div>
-  <div class="bar" style="position:sticky;bottom:0"><div class="btn-row">
+  <div class="bar" style="flex-shrink:0"><div class="btn-row">
     <button class="btn btn-s" style="flex:1" onclick="goNav('tmt')">← Hub</button>
     <button class="btn btn-p" style="flex:2" onclick="goTo('s-t-scoring')">📝 Enter Scores</button>
   </div></div>
@@ -729,7 +860,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--text);
       </div>
     </div>
   </div>
-  <div class="bar" style="position:sticky;bottom:0"><div style="display:flex;gap:8px">
+  <div class="bar" style="flex-shrink:0"><div style="display:flex;gap:8px">
     <button class="btn btn-s" style="flex:1" id="t-btn-prev" onclick="tPrevHole()">← Prev</button>
     <button class="btn btn-p" style="flex:2" id="t-btn-next" onclick="tNextHole()">Next →</button>
     <button class="btn btn-s" style="flex:1;font-size:12px" onclick="goTo('s-t-lb')">Board</button>
@@ -746,7 +877,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--text);
     <p style="color:rgba(254,215,170,.6)">Correct scores after close</p>
   </div>
   <div class="scroll body" style="padding-bottom:100px" id="admin-body"></div>
-  <div class="bar" style="position:sticky;bottom:0">
+  <div class="bar" style="flex-shrink:0">
     <button class="btn btn-p" onclick="saveAdminEdits()" style="margin-bottom:8px;background:#7c2d12">Save Corrections ✓</button>
     <button class="btn btn-s" onclick="goNav('history')">Cancel</button>
   </div>
@@ -757,9 +888,10 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--text);
 ══════════════════════════════════════════ -->
 <nav class="nav" id="main-nav">
   <button class="nav-btn active" id="nb-home" onclick="goNav('home')"><span class="nav-ico">⛳</span><span class="nav-lbl">Home</span></button>
-  <button class="nav-btn" id="nb-tmt" onclick="goNav('tmt')"><span class="nav-ico">🏆</span><span class="nav-lbl">Tournament</span></button>
+  <button class="nav-btn" id="nb-tmt" onclick="goNav('tmt')"><span class="nav-ico">🏆</span><span class="nav-lbl">Tour</span></button>
   <button class="nav-btn" id="nb-ledger" onclick="goNav('ledger')"><span class="nav-ico">💰</span><span class="nav-lbl">Ledger</span></button>
   <button class="nav-btn" id="nb-history" onclick="goNav('history')"><span class="nav-ico">📋</span><span class="nav-lbl">History</span></button>
+  <button class="nav-btn" id="nb-courses" onclick="goNav('courses')"><span class="nav-ico">🏌️</span><span class="nav-lbl">Courses</span></button>
   <button class="nav-btn" id="nb-roster" onclick="goNav('roster')"><span class="nav-ico">👥</span><span class="nav-lbl">Roster</span></button>
 </nav>
 
@@ -852,6 +984,16 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--text);
     <input type="hidden" id="er-idx">
     <div class="field"><label>Name</label><input type="text" id="er-name" maxlength="20"></div>
     <div class="field"><label>Handicap</label><input type="number" id="er-hdcp" min="0" max="36"></div>
+    <div class="field"><label>Mobile Number</label><input type="tel" id="er-mobile" placeholder="(555) 555-5555" maxlength="20"></div>
+    <div class="field"><label>Venmo Handle</label>
+      <div style="display:flex;align-items:center;gap:8px">
+        <span style="font-size:15px;color:var(--r3);font-weight:600">@</span>
+        <input type="text" id="er-venmo" placeholder="venmo-handle" maxlength="30" style="flex:1">
+      </div>
+    </div>
+    <div style="font-size:11px;color:var(--r3);margin-bottom:14px;margin-top:-8px;padding:6px 10px;background:var(--r0);border-radius:var(--rad-xs)">
+      📱 Mobile & 💸 Venmo are saved for future use — match invites and payment requests coming soon.
+    </div>
     <button class="btn btn-p" onclick="saveRosterEdit()" style="margin-bottom:8px">Save Changes</button>
     <button class="btn btn-red" onclick="deleteRosterPlayer()" style="margin-bottom:8px">Remove from Roster</button>
     <button class="btn btn-s" onclick="closeModal('m-edit-roster')">Cancel</button>
@@ -884,13 +1026,24 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--text);
 // ═══════════════════════════════════════════════════
 //  CONSTANTS
 // ═══════════════════════════════════════════════════
-const PAR  = [4,3,4,4,4,5,4,3,5, 5,4,5,3,4,4,4,3,4];
-const YDS  = [408,168,400,450,391,520,448,215,567, 543,358,505,188,401,360,413,185,382];
-const HCP  = [13,17,9,3,11,7,5,15,1, 4,14,6,18,8,12,2,16,10];
+// Course data — updated dynamically from active course
+let PAR = [4,3,4,4,4,5,4,3,5, 5,4,5,3,4,4,4,3,4];
+let YDS = [408,168,400,450,391,520,448,215,567, 543,358,505,188,401,360,413,185,382];
+let HCP = [13,17,9,3,11,7,5,15,1, 4,14,6,18,8,12,2,16,10];
+
+function getActiveCourse(){
+  if(!DB||!DB.courses||!DB.courses.length) return MUSKET_RIDGE;
+  return DB.courses.find(c=>c.isActive) || DB.courses[0];
+}
+
+function applyActiveCourse(){
+  const c = getActiveCourse();
+  PAR = c.par; YDS = c.yds; HCP = c.hcp;
+}
 const TOTAL_PAR = PAR.reduce((a,b)=>a+b,0); // 72
 const AV   = ['av-0','av-1','av-2','av-3','av-4','av-5'];
 const ADMIN_PIN = '2024';
-const NAV_SCREENS = new Set(['s-home','s-history','s-ledger','s-roster','s-tmt']);
+const NAV_SCREENS = new Set(['s-home','s-history','s-ledger','s-roster','s-tmt','s-courses']);
 
 // ═══════════════════════════════════════════════════
 //  STATE
@@ -899,8 +1052,13 @@ const NAV_SCREENS = new Set(['s-home','s-history','s-ledger','s-roster','s-tmt']
 let S = {
   you: {name:'',hdcp:0},
   opps: [],           // [{name,hdcp,type,id}]
-  games: {nassau:false,closeout:false,wolf:false,junk:false,vegas:false},
-  bets: {nassau:{f9:5,b9:5,overall:10}, closeout:{base:10,press:5}, wolf:{pt:2}, junk:{pt:1}, vegas:{pt:1}},
+  games: {nassau:false,closeout:false,wolf:false,junk:false,vegas:false,quota:false},
+  bets: {nassau:{f9:5,b9:5,overall:10}, closeout:{base:10,press:5}, wolf:{pt:2}, junk:{pt:1}, vegas:{pt:1},
+    quota:{payoutType:'overall', spots:[{place:1,amt:50},{place:2,amt:30},{place:3,amt:20}],
+           f9:10, b9:10, total:20, format:'individual', teamSize:2, scoresCount:2,
+           pts:{triple:-1,double:0,bogey:1,par:2,birdie:3,eagle:4}}},
+  quotaTeams: [],  // [{name, playerIds:[]}]
+  quotaHdcps: {}, // raw hdcp per player for quota (set on strokes page)
   vegasTeams: {A:[], B:[]},
   nassauMode: 'h2h',   // 'h2h' or 'team'
   closeoutMode: 'h2h',
@@ -929,7 +1087,15 @@ let tSetup = {name:'',rounds:2,course:'Musket Ridge GC',format:'gross',pairingMo
 let tViewRound = -1;
 
 // App data (persisted)
-let DB = {rounds:[], roster:[], ledger:{}, h2h:{}, pastTournaments:[]};
+const MUSKET_RIDGE = {
+  id:'musket-ridge', name:'Musket Ridge Golf Club', location:'Myersville, MD', yardage:6902,
+  par:[4,3,4,4,4,5,4,3,5, 5,4,5,3,4,4,4,3,4],
+  hcp:[13,17,9,3,11,7,5,15,1, 4,14,6,18,8,12,2,16,10],
+  yds:[408,168,400,450,391,520,448,215,567, 543,358,505,188,401,360,413,185,382],
+  isActive:true, isDefault:true
+};
+
+let DB = {rounds:[], roster:[], ledger:{}, h2h:{}, pastTournaments:[], courses:[MUSKET_RIDGE]};
 
 // ═══════════════════════════════════════════════════
 //  PERSISTENCE
@@ -946,7 +1112,10 @@ function loadT(){ T = load('tmt', null); }
 function clearT(){ try{localStorage.removeItem('tda_tmt')}catch(e){} T = null; }
 
 function saveDB(){ save('db', DB); }
-function loadDB(){ DB = load('db', {rounds:[], roster:[], ledger:{}, h2h:{}, pastTournaments:[]}); }
+function loadDB(){
+  DB = load('db', {rounds:[], roster:[], ledger:{}, h2h:{}, pastTournaments:[], courses:[MUSKET_RIDGE]});
+  if(!DB.courses||!DB.courses.length) DB.courses = [MUSKET_RIDGE];
+}
 
 // ═══════════════════════════════════════════════════
 //  NAVIGATION
@@ -961,7 +1130,7 @@ function goTo(id){
 }
 
 function goNav(tab){
-  const map = {home:'s-home',tmt:'s-tmt',ledger:'s-ledger',history:'s-history',roster:'s-roster'};
+  const map = {home:'s-home',tmt:'s-tmt',ledger:'s-ledger',history:'s-history',roster:'s-roster',courses:'s-courses'};
   goTo(map[tab] || 's-home');
   document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
   const nb = document.getElementById('nb-'+tab);
@@ -970,6 +1139,7 @@ function goNav(tab){
   if(tab==='ledger')  renderLedger();
   if(tab==='roster')  renderRoster();
   if(tab==='tmt')     renderTmtHub();
+  if(tab==='courses') renderCourses();
   if(tab==='home')  { renderHome(); updateHomeCTA(); }
 }
 
@@ -994,6 +1164,7 @@ function renderHome(){
   netEl.textContent = (net>=0?'+':'')+'$'+Math.abs(net);
   netEl.style.color = net>=0?'var(--g2)':'var(--red)';
   document.getElementById('h-pct').textContent = rounds.length ? Math.round(wins/rounds.length*100)+'%' : '—';
+  renderHomeCourseSelector();
 
   const el = document.getElementById('home-rounds');
   if(!rounds.length){
@@ -1113,6 +1284,8 @@ function step1to2(){
   renderWolfOrder();
   renderPartnerParTeamBuilder();
   renderVegasTeamBuilder();
+  renderQuotaSpotsBuilder();
+  renderQuotaTeamBuilder();
   goTo('s-games');
 }
 
@@ -1125,26 +1298,30 @@ function toggleGame(g){
   document.getElementById('gc-'+g).classList.toggle('on', S.games[g]);
   if(g==='junk') renderPartnerParTeamBuilder();
   if(g==='vegas') renderVegasTeamBuilder();
+  if(g==='quota'&&S.games.quota){ renderQuotaSpotsBuilder(); renderQuotaTeamBuilder(); }
 }
 
 function setMatchMode(game, mode){
-  if(game==='nassau') S.nassauMode=mode;
-  else S.closeoutMode=mode;
+  // Toggle team match on/off — H2H always runs, team is additive
+  const currentMode = game==='nassau' ? S.nassauMode : S.closeoutMode;
+  const newMode = currentMode==='team' ? 'h2h' : 'team';
+  if(game==='nassau') S.nassauMode=newMode;
+  else S.closeoutMode=newMode;
 
   const prefix = game==='nassau'?'n':'c';
-  const h2hBtn = document.getElementById(`${prefix}-mode-h2h`);
   const teamBtn = document.getElementById(`${prefix}-mode-team`);
   const builderEl = document.getElementById(`${game}-team-builder`);
+  const isTeam = newMode==='team';
 
-  h2hBtn.style.background = mode==='h2h'?'var(--g2)':'var(--white)';
-  h2hBtn.style.color = mode==='h2h'?'#fff':'var(--r4)';
-  h2hBtn.style.borderColor = mode==='h2h'?'var(--g2)':'var(--r1)';
-  teamBtn.style.background = mode==='team'?'var(--g2)':'var(--white)';
-  teamBtn.style.color = mode==='team'?'#fff':'var(--r4)';
-  teamBtn.style.borderColor = mode==='team'?'var(--g2)':'var(--r1)';
+  if(teamBtn){
+    teamBtn.textContent = isTeam ? '👥 Team Match: ON' : '👥 + Add Team Match';
+    teamBtn.style.background = isTeam ? 'var(--g2)' : 'var(--white)';
+    teamBtn.style.color = isTeam ? '#fff' : 'var(--r4)';
+    teamBtn.style.borderColor = isTeam ? 'var(--g2)' : 'var(--r1)';
+  }
 
-  builderEl.style.display = mode==='team'?'block':'none';
-  if(mode==='team') renderMatchTeamBuilder(game);
+  builderEl.style.display = isTeam ? 'block' : 'none';
+  if(isTeam) renderMatchTeamBuilder(game);
 }
 
 function renderMatchTeamBuilder(game){
@@ -1333,6 +1510,116 @@ function renderVegasTeamBuilder(){
   });
 }
 
+function setQuotaPayout(type){
+  S.bets.quota.payoutType = type;
+  document.getElementById('qp-overall').style.background = type==='overall'?'var(--g2)':'var(--white)';
+  document.getElementById('qp-overall').style.color = type==='overall'?'#fff':'var(--r4)';
+  document.getElementById('qp-overall').style.borderColor = type==='overall'?'var(--g2)':'var(--r1)';
+  document.getElementById('qp-nassau').style.background = type==='nassau'?'var(--g2)':'var(--white)';
+  document.getElementById('qp-nassau').style.color = type==='nassau'?'#fff':'var(--r4)';
+  document.getElementById('qp-nassau').style.borderColor = type==='nassau'?'var(--g2)':'var(--r1)';
+  document.getElementById('quota-payout-overall').style.display = type==='overall'?'block':'none';
+  document.getElementById('quota-payout-nassau').style.display = type==='nassau'?'block':'none';
+}
+
+function setQuotaFormat(fmt){
+  S.bets.quota.format = fmt;
+  document.getElementById('qt-individual').style.background = fmt==='individual'?'var(--g2)':'var(--white)';
+  document.getElementById('qt-individual').style.color = fmt==='individual'?'#fff':'var(--r4)';
+  document.getElementById('qt-individual').style.borderColor = fmt==='individual'?'var(--g2)':'var(--r1)';
+  document.getElementById('qt-team').style.background = fmt==='team'?'var(--g2)':'var(--white)';
+  document.getElementById('qt-team').style.color = fmt==='team'?'#fff':'var(--r4)';
+  document.getElementById('qt-team').style.borderColor = fmt==='team'?'var(--g2)':'var(--r1)';
+  document.getElementById('quota-team-options').style.display = fmt==='team'?'block':'none';
+  if(fmt==='team') renderQuotaTeamBuilder();
+}
+
+function renderQuotaSpotsBuilder(){
+  const el = document.getElementById('quota-spots-rows');
+  if(!el) return;
+  const n = +document.getElementById('q-spots').value || 3;
+  // Keep existing amounts or default
+  while(S.bets.quota.spots.length < n) S.bets.quota.spots.push({place:S.bets.quota.spots.length+1, amt:0});
+  S.bets.quota.spots = S.bets.quota.spots.slice(0, n);
+  const ordinal = i => ['1st','2nd','3rd','4th','5th','6th'][i]||`${i+1}th`;
+  el.innerHTML = S.bets.quota.spots.map((s,i)=>`
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:5px">
+      <span style="font-size:13px;font-weight:600;width:28px;color:var(--g1)">${ordinal(i)}</span>
+      <span style="font-size:13px;color:var(--r3)">$</span>
+      <input class="bet-in" type="number" value="${s.amt}" min="0" style="width:80px"
+        onchange="S.bets.quota.spots[${i}].amt=+this.value">
+    </div>`).join('');
+}
+
+function renderQuotaTeamBuilder(){
+  const el = document.getElementById('quota-team-builder');
+  if(!el) return;
+  const allPlayers = [
+    {id:'you', name:S.you.name||'You', avClass:'av-you'},
+    ...S.opps.filter(o=>o.type!=='guest').map((o,i)=>({id:o.id, name:o.name, avClass:AV[i%AV.length]}))
+  ];
+  const teamSize = +document.getElementById('q-team-size')?.value || 2;
+  const numTeams = Math.max(2, Math.ceil(allPlayers.length / teamSize));
+
+  // Init teams if count changed
+  if(!S.quotaTeams.length || S.quotaTeams.length !== numTeams){
+    S.quotaTeams = Array.from({length:numTeams}, (_,i)=>({name:`Team ${i+1}`, playerIds:[]}));
+  }
+
+  if(allPlayers.length < 2){ el.innerHTML=`<div style="font-size:12px;color:var(--r3)">Need at least 2 group members for team quota.</div>`; return; }
+
+  // Team summary badges
+  const teamColors = [
+    {bg:'var(--gt)',text:'var(--g1)',border:'var(--g2)',label:'A'},
+    {bg:'#eff6ff',text:'#1e40af',border:'#2563eb',label:'B'},
+    {bg:'#fdf4ff',text:'#6b21a8',border:'#9333ea',label:'C'},
+    {bg:'#fff7ed',text:'#c2410c',border:'#ea580c',label:'D'},
+  ];
+
+  el.innerHTML = `
+    ${allPlayers.map(p=>{
+      const teamIdx = S.quotaTeams.findIndex(t=>t.playerIds.some(id=>id==p.id));
+      return `<div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--r0)">
+        <div class="av ${p.avClass}" style="width:28px;height:28px;font-size:10px;flex-shrink:0">${p.name[0].toUpperCase()}</div>
+        <span style="flex:1;font-size:14px;font-weight:500">${p.name}</span>
+        <div style="display:flex;gap:4px">
+          ${S.quotaTeams.map((t,ti)=>{
+            const c = teamColors[ti]||teamColors[0];
+            const active = teamIdx===ti;
+            return `<button class="quota-team-btn" data-pid="${p.id}" data-team="${ti}"
+              style="width:32px;height:30px;border-radius:var(--rad-xs);
+              border:1.5px solid ${active?c.border:'var(--r1)'};
+              background:${active?c.border:'var(--white)'};
+              color:${active?'#fff':'var(--r4)'};
+              font-size:11px;font-weight:700;cursor:pointer">${c.label}</button>`;
+          }).join('')}
+        </div>
+      </div>`;
+    }).join('')}
+    <div style="display:flex;gap:6px;margin-top:8px;flex-wrap:wrap">
+      ${S.quotaTeams.map((t,ti)=>{
+        const c = teamColors[ti]||teamColors[0];
+        const members = t.playerIds.map(id=>allPlayers.find(p=>p.id==id)?.name).filter(Boolean);
+        return `<div style="flex:1;min-width:80px;background:${c.bg};border-radius:var(--rad-xs);padding:5px 8px">
+          <div style="font-size:10px;font-weight:700;color:${c.text}">Team ${c.label}</div>
+          <div style="font-size:11px;color:${c.text}">${members.length?members.join(', '):'None yet'}</div>
+        </div>`;
+      }).join('')}
+    </div>`;
+
+  el.querySelectorAll('.quota-team-btn').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const rawPid = btn.dataset.pid;
+      const pid = rawPid==='you'?'you':parseFloat(rawPid);
+      const teamIdx = parseInt(btn.dataset.team);
+      const alreadyOn = S.quotaTeams[teamIdx].playerIds.some(id=>id==pid);
+      S.quotaTeams.forEach(t=>{ t.playerIds = t.playerIds.filter(id=>id!=pid); });
+      if(!alreadyOn) S.quotaTeams[teamIdx].playerIds.push(pid);
+      renderQuotaTeamBuilder();
+    });
+  });
+}
+
 function renderWolfOrder(){
   const grp = [{id:'you',name:S.you.name||'You',avClass:'av-you'},
     ...S.opps.filter(o=>o.type!=='guest').map((o,i)=>({id:o.id,name:o.name,avClass:AV[i%AV.length]}))];
@@ -1367,12 +1654,27 @@ function wolfOrderMove(idx, dir){
 }
 
 function step2to3(){
-  if(!S.games.nassau&&!S.games.closeout&&!S.games.wolf&&!S.games.junk&&!S.games.vegas){ alert('Select at least one game.'); return; }
+  if(!S.games.nassau&&!S.games.closeout&&!S.games.wolf&&!S.games.junk&&!S.games.vegas&&!S.games.quota){ alert('Select at least one game.'); return; }
   S.bets.nassau={f9:+document.getElementById('n-f9').value||5,b9:+document.getElementById('n-b9').value||5,overall:+document.getElementById('n-18').value||10};
   S.bets.closeout={base:+document.getElementById('c-base').value||10,press:+document.getElementById('c-press').value||5};
   S.bets.wolf.pt=+document.getElementById('w-pt').value||2;
   S.bets.junk.pt=+document.getElementById('j-pt').value||1;
   if(S.games.vegas) S.bets.vegas.pt=+document.getElementById('v-pt').value||1;
+  if(S.games.quota){
+    const q=S.bets.quota;
+    q.pts.triple=+document.getElementById('q-triple').value;
+    q.pts.double=+document.getElementById('q-double').value;
+    q.pts.bogey=+document.getElementById('q-bogey').value;
+    q.pts.par=+document.getElementById('q-par').value;
+    q.pts.birdie=+document.getElementById('q-birdie').value;
+    q.pts.eagle=+document.getElementById('q-eagle').value;
+    if(q.payoutType==='nassau'){
+      q.f9=+document.getElementById('q-f9').value||10;
+      q.b9=+document.getElementById('q-b9').value||10;
+      q.total=+document.getElementById('q-total').value||20;
+    }
+    q.teamSize=+document.getElementById('q-team-size').value||2;
+  }
   const wolfGrpCount=1+S.opps.filter(o=>o.type!=='guest').length;
   if(S.games.wolf&&wolfGrpCount<4){ alert('Wolf needs 4+ group members. You have '+wolfGrpCount+'.'); return; }
   if(S.games.vegas&&(S.vegasTeams.A.length<2||S.vegasTeams.B.length<2)){ alert('Vegas needs 2 players on each team.'); return; }
@@ -1395,38 +1697,80 @@ function renderStrokes(){
   }
   const el = document.getElementById('stroke-list');
   const has1v1 = S.games.nassau||S.games.closeout;
-  el.innerHTML = S.opps.map((o,i)=>{
-    const m=S.matches[i];
-    const sug=Math.round(Math.abs(o.hdcp-S.you.hdcp));
-    const sugWho=o.hdcp>S.you.hdcp?S.you.name:o.name;
-    return `<div class="card">
-      <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
-        <div class="av ${AV[i%AV.length]}" style="width:30px;height:30px;font-size:11px">${o.name[0].toUpperCase()}</div>
-        <span style="font-size:15px;font-weight:600;color:var(--g1)">${S.you.name} vs ${o.name}</span>
-      </div>
-      ${has1v1?`<div class="card-title" style="margin-bottom:8px">Games</div>
-      <div class="pills" style="margin-bottom:12px">
-        ${S.games.nassau?`<button class="pill ${m.inNassau?'on':''}" onclick="toggleMatchGame(${i},'nassau',this)">Nassau</button>`:''}
-        ${S.games.closeout?`<button class="pill ${m.inCloseout?'on':''}" onclick="toggleMatchGame(${i},'closeout',this)">Closeout</button>`:''}
-        ${S.games.wolf?`<div class="pill on" style="cursor:default;opacity:.7">Wolf ✓</div>`:''}
-      </div>`:''}
-      <div class="card-title" style="margin-bottom:8px">Strokes</div>
-      <div style="display:flex;gap:8px;align-items:flex-end">
-        <div class="bet-f">
-          <label>Strokes</label>
-          <input class="bet-in" type="number" value="${m.strokes}" min="0" max="36" onchange="S.matches[${i}].strokes=+this.value">
+  let html = '';
+
+  // 1v1 match cards (Nassau / Closeout)
+  if(has1v1||S.games.wolf){
+    html += S.opps.map((o,i)=>{
+      const m=S.matches[i];
+      const sug=Math.round(Math.abs(o.hdcp-S.you.hdcp));
+      const sugWho=o.hdcp>S.you.hdcp?S.you.name:o.name;
+      return `<div class="card">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+          <div class="av ${AV[i%AV.length]}" style="width:30px;height:30px;font-size:11px">${o.name[0].toUpperCase()}</div>
+          <span style="font-size:15px;font-weight:600;color:var(--g1)">${S.you.name} vs ${o.name}</span>
         </div>
-        <div class="bet-f">
-          <label>To</label>
-          <div style="display:flex;gap:4px">
-            <button class="btn btn-s btn-sm ${m.youGet?'on':''}" onclick="setWho(${i},'you',this)" style="${m.youGet?'background:var(--g2);color:#fff;border-color:var(--g2)':''}">You</button>
-            <button class="btn btn-s btn-sm ${!m.youGet?'on':''}" onclick="setWho(${i},'opp',this)" style="${!m.youGet?'background:var(--g2);color:#fff;border-color:var(--g2)':''}">${o.name}</button>
+        ${has1v1?`<div class="card-title" style="margin-bottom:8px">Games</div>
+        <div class="pills" style="margin-bottom:12px">
+          ${S.games.nassau?`<button class="pill ${m.inNassau?'on':''}" onclick="toggleMatchGame(${i},'nassau',this)">Nassau</button>`:''}
+          ${S.games.closeout?`<button class="pill ${m.inCloseout?'on':''}" onclick="toggleMatchGame(${i},'closeout',this)">Closeout</button>`:''}
+          ${S.games.wolf?`<div class="pill on" style="cursor:default;opacity:.7">Wolf ✓</div>`:''}
+        </div>`:''}
+        <div class="card-title" style="margin-bottom:8px">Strokes</div>
+        <div style="display:flex;gap:8px;align-items:flex-end">
+          <div class="bet-f">
+            <label>Strokes</label>
+            <input class="bet-in" type="number" value="${m.strokes}" min="0" max="36" onchange="S.matches[${i}].strokes=+this.value">
+          </div>
+          <div class="bet-f">
+            <label>To</label>
+            <div style="display:flex;gap:4px">
+              <button class="btn btn-s btn-sm ${m.youGet?'on':''}" onclick="setWho(${i},'you',this)" style="${m.youGet?'background:var(--g2);color:#fff;border-color:var(--g2)':''}">You</button>
+              <button class="btn btn-s btn-sm ${!m.youGet?'on':''}" onclick="setWho(${i},'opp',this)" style="${!m.youGet?'background:var(--g2);color:#fff;border-color:var(--g2)':''}">${o.name}</button>
+            </div>
           </div>
         </div>
+        <div style="font-size:11px;color:var(--r3);font-style:italic;margin-top:6px">💡 Handicap suggests: ${sugWho} gets ${sug} strokes</div>
+      </div>`;
+    }).join('');
+  }
+
+  // Quota handicap section — shows all players with editable hdcp override
+  if(S.games.quota){
+    const allPlayers = [
+      {id:'you', name:S.you.name||'You', hdcp:S.you.hdcp},
+      ...S.opps.map(o=>({id:o.id, name:o.name, hdcp:o.hdcp}))
+    ];
+    // Init quotaHdcps from current values if not yet set
+    allPlayers.forEach(p=>{ if(S.quotaHdcps[p.id]==null) S.quotaHdcps[p.id]=p.hdcp; });
+    html += `<div class="card">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">
+        <span style="font-size:20px">🎯</span>
+        <div>
+          <div style="font-size:15px;font-weight:600;color:var(--g1)">Quota Handicaps</div>
+          <div style="font-size:12px;color:var(--r3)">Quota = 36 − Hdcp. Adjust if needed — no strokes given between players.</div>
+        </div>
       </div>
-      <div style="font-size:11px;color:var(--r3);font-style:italic;margin-top:6px">💡 Handicap suggests: ${sugWho} gets ${sug} strokes</div>
+      ${allPlayers.map((p,i)=>{
+        const hdcp = S.quotaHdcps[p.id] ?? p.hdcp;
+        const quota = 36 - hdcp;
+        const inputId = `quota-hdcp-${i}`;
+        const pid = p.id === 'you' ? 'you' : p.id;
+        return `<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--r0)">
+          <div class="av ${i===0?'av-you':AV[(i-1)%AV.length]}" style="width:28px;height:28px;font-size:10px;flex-shrink:0">${p.name[0].toUpperCase()}</div>
+          <span style="flex:1;font-size:14px;font-weight:500">${p.name}</span>
+          <div style="display:flex;align-items:center;gap:6px">
+            <span style="font-size:12px;color:var(--r3)">Hdcp</span>
+            <input class="bet-in" type="number" id="${inputId}" value="${hdcp}" min="0" max="36" style="width:56px;text-align:center"
+              onchange="S.quotaHdcps['${pid}']=+this.value;this.nextElementSibling.textContent='Quota '+(36-+this.value)">
+            <span style="font-size:12px;color:var(--g1);font-weight:600;min-width:56px">Quota ${quota}</span>
+          </div>
+        </div>`;
+      }).join('')}
     </div>`;
-  }).join('');
+  }
+
+  el.innerHTML = html || '<div style="padding:16px;text-align:center;color:var(--r3)">No games selected that require stroke configuration.</div>';
 }
 
 function toggleMatchGame(idx,game,btn){
@@ -1453,28 +1797,32 @@ function setWho(idx,who,btn){
 //  CONFIRM & START
 // ═══════════════════════════════════════════════════
 function showConfirm(){
-  let html=`<div class="sum-row"><span class="muted">Course</span><span style="font-weight:600">Musket Ridge GC</span></div>
+  let html=`<div class="sum-row"><span class="muted">Course</span><span style="font-weight:600">${getActiveCourse().name}</span></div>
     <div class="sum-row"><span class="muted">Players</span><span style="font-weight:600">${S.you.name} + ${S.opps.length}</span></div>`;
   if(S.games.nassau){
-    const mode = S.nassauMode==='team'?'Team Best Ball':'Head-to-Head';
-    html+=`<div class="sum-row"><span class="muted">Nassau</span><span style="font-weight:600">$${S.bets.nassau.f9}/$${S.bets.nassau.b9}/$${S.bets.nassau.overall} · ${mode}</span></div>`;
+    html+=`<div class="sum-row"><span class="muted">Nassau</span><span style="font-weight:600">$${S.bets.nassau.f9}/$${S.bets.nassau.b9}/$${S.bets.nassau.overall}${S.nassauMode==='team'?' + Team':''}
+</span></div>`;
     if(S.nassauMode==='team'){
-      const tA=S.nassauTeams.A.map(id=>id==='you'?S.you.name:S.opps.find(o=>o.id==id)?.name||'?').join(', ');
-      const tB=S.nassauTeams.B.map(id=>id==='you'?S.you.name:S.opps.find(o=>o.id==id)?.name||'?').join(', ');
+      const tA=S.nassauTeams.A.map(id=>id==='you'?S.you.name:S.opps.find(o=>o.id==id)?.name||'?').join(' & ');
+      const tB=S.nassauTeams.B.map(id=>id==='you'?S.you.name:S.opps.find(o=>o.id==id)?.name||'?').join(' & ');
       html+=`<div class="sum-row" style="flex-direction:column;align-items:flex-start;gap:2px"><span style="font-size:12px;color:var(--r3)">Team A: ${tA||'—'}</span><span style="font-size:12px;color:var(--r3)">Team B: ${tB||'—'}</span></div>`;
     }
   }
   if(S.games.closeout){
-    const mode = S.closeoutMode==='team'?'Team Best Ball':'Head-to-Head';
-    html+=`<div class="sum-row"><span class="muted">Closeout</span><span style="font-weight:600">$${S.bets.closeout.base} · press $${S.bets.closeout.press} · ${mode}</span></div>`;
+    html+=`<div class="sum-row"><span class="muted">Closeout</span><span style="font-weight:600">$${S.bets.closeout.base} · press $${S.bets.closeout.press}${S.closeoutMode==='team'?' + Team':''}
+</span></div>`;
     if(S.closeoutMode==='team'){
-      const tA=S.closeoutTeams.A.map(id=>id==='you'?S.you.name:S.opps.find(o=>o.id==id)?.name||'?').join(', ');
-      const tB=S.closeoutTeams.B.map(id=>id==='you'?S.you.name:S.opps.find(o=>o.id==id)?.name||'?').join(', ');
+      const tA=S.closeoutTeams.A.map(id=>id==='you'?S.you.name:S.opps.find(o=>o.id==id)?.name||'?').join(' & ');
+      const tB=S.closeoutTeams.B.map(id=>id==='you'?S.you.name:S.opps.find(o=>o.id==id)?.name||'?').join(' & ');
       html+=`<div class="sum-row" style="flex-direction:column;align-items:flex-start;gap:2px"><span style="font-size:12px;color:var(--r3)">Team A: ${tA||'—'}</span><span style="font-size:12px;color:var(--r3)">Team B: ${tB||'—'}</span></div>`;
     }
   }
   if(S.games.wolf) html+=`<div class="sum-row"><span class="muted">Wolf</span><span style="font-weight:600">$${S.bets.wolf.pt}/pt</span></div>`;
-  if(S.games.junk) html+=`<div class="sum-row"><span class="muted">Junk</span><span style="font-weight:600">$${S.bets.junk.pt}/pt · 8 categories</span></div>`;
+  if(S.games.quota){
+    const q=S.bets.quota;
+    const payDesc=q.payoutType==='nassau'?`F9 $${q.f9} / B9 $${q.b9} / Total $${q.total}`:`${q.spots.length} spots`;
+    html+=`<div class="sum-row"><span class="muted">Quota</span><span style="font-weight:600">${q.format==='team'?'Team':'Individual'} · ${payDesc}</span></div>`;
+  }
   if(S.games.vegas){
     const tA=S.vegasTeams.A.map(id=>id==='you'?S.you.name:S.opps.find(o=>o.id==id)?.name||'?').join(' & ');
     const tB=S.vegasTeams.B.map(id=>id==='you'?S.you.name:S.opps.find(o=>o.id==id)?.name||'?').join(' & ');
@@ -1508,6 +1856,9 @@ function startRound(){
     nassauTeams:S.nassauTeams, closeoutTeams:S.closeoutTeams,
     vegasTeams:S.vegasTeams,
     vegasBumps:[],
+    quotaTeams: JSON.parse(JSON.stringify(S.quotaTeams)),
+    // quotaHdcps: raw hdcp per player as set on the strokes page — used only for quota calculation
+    quotaHdcps: Object.assign({'you':S.you.hdcp}, ...S.opps.map(o=>({[o.id]:o.hdcp})), S.quotaHdcps),
     // playerStrokes: {pid: agreedStrokes} — 0 means no strokes (scratch agreement)
     // Built from matches: for each opponent, their agreed stroke count and direction
     playerStrokes: (()=>{
@@ -1694,8 +2045,7 @@ function calcNassauTeam(){
 
 // ── CLOSEOUT ─────────────────────────────────────
 function calcCloseout(mi){
-  // Route to team engine if team mode
-  if(R.closeoutMode==='team') return mi===0 ? calcCloseoutTeam() : null;
+  // Team mode is additive — H2H always runs if inCloseout is set
   const o=R.opps[mi], m=R.matches[mi];
   if(!m.inCloseout) return null;
   let status=0,pressRes=0,closedAt=null,pressActive=false;
@@ -1724,8 +2074,7 @@ function calcCloseout(mi){
 
 // ── NASSAU ────────────────────────────────────────
 function calcNassau(mi){
-  // Route to team engine if team mode
-  if(R.nassauMode==='team') return mi===0 ? calcNassauTeam() : null;
+  // Team mode is additive — H2H always runs if inNassau is set
   const o=R.opps[mi], m=R.matches[mi];
   if(!m.inNassau) return null;
   const pr=R.nassauPresses[mi], bet=R.bets.nassau;
@@ -1862,6 +2211,7 @@ function initScorecard(){
   renderWolfPanel();
   renderScoreInputs();
   renderVegasPanel();
+  renderQuotaPanel();
   renderJunkPanel();
   renderPressPanel();
   renderStatusPanel();
@@ -1926,6 +2276,7 @@ function changeScore(pid,delta){
   if(R.games.wolf&&h>=15) updateLast3WolfCaptain(h);
   renderScoreInputs();
   renderVegasPanel();
+  renderQuotaPanel();
   renderJunkPanel();
   renderStatusPanel();
   renderHoleDots();
@@ -2280,6 +2631,144 @@ function renderVegasPanel(){
       <div style="font-size:11px;color:var(--r3);margin-bottom:6px">A: ${tANames} &nbsp;·&nbsp; B: ${tBNames}</div>
       ${holeInfo}
       ${bumpBtn}
+    </div>
+  </div>`;
+}
+
+// ═══════════════════════════════════════════════════
+//  QUOTA ENGINE
+// ═══════════════════════════════════════════════════
+
+function quotaPlayers(){
+  if(!R) return [];
+  const hdcps = R.quotaHdcps || {};
+  return [
+    {id:'you', name:R.you.name, hdcp: hdcps['you'] ?? R.you.hdcp},
+    ...R.opps.map(o=>({id:o.id, name:o.name, hdcp: hdcps[o.id] ?? o.hdcp}))
+  ];
+}
+
+function quotaPointsForHole(gross, par, pts){
+  const diff = gross - par;
+  if(diff <= -2) return pts.eagle;
+  if(diff === -1) return pts.birdie;
+  if(diff === 0) return pts.par;
+  if(diff === 1) return pts.bogey;
+  if(diff === 2) return pts.double;
+  return pts.triple; // triple bogey or worse
+}
+
+function calcQuota(){
+  if(!R.games.quota) return null;
+  const players = quotaPlayers();
+  const q = R.bets.quota;
+  const pts = q.pts;
+  const holesPlayed = R.currentHole + 1;
+
+  function playerEntry(p){
+    const quota = 36 - p.hdcp;
+    const quotaF9 = Math.ceil(quota / 2);   // larger half on front
+    const quotaB9 = Math.floor(quota / 2);  // smaller half on back
+    let earnedF9 = 0, earnedB9 = 0;
+    for(let h=0; h<Math.min(holesPlayed,18); h++){
+      const sc = R.scores[h];
+      const raw = p.id==='you'||p.id=='you' ? sc.you : sc[p.id];
+      const gross = parseInt(raw);
+      if(isNaN(gross)) continue;
+      const holePts = quotaPointsForHole(gross, PAR[h], pts);
+      if(h < 9) earnedF9 += holePts;
+      else earnedB9 += holePts;
+    }
+    const netF9 = earnedF9 - quotaF9;
+    const netB9 = earnedB9 - quotaB9;
+    const netTotal = (earnedF9 + earnedB9) - quota;
+    return {id:p.id, name:p.name, hdcp:p.hdcp, quota, quotaF9, quotaB9, earnedF9, earnedB9, netF9, netB9, netTotal};
+  }
+
+  let entries;
+  if(q.format==='team' && R.quotaTeams && R.quotaTeams.length){
+    // Team mode: sum all members' earned points and quotas
+    entries = R.quotaTeams.map((team,ti)=>{
+      const members = team.playerIds.map(id=>players.find(p=>p.id==id)).filter(Boolean);
+      if(!members.length) return null;
+      const teamQuota = members.reduce((a,p)=>a+(36-p.hdcp),0);
+      let teamF9=0, teamB9=0, teamQuotaF9=0, teamQuotaB9=0;
+      members.forEach(p=>{
+        const e = playerEntry(p);
+        teamF9 += e.earnedF9;
+        teamB9 += e.earnedB9;
+        teamQuotaF9 += Math.ceil((36-p.hdcp) / 2);
+        teamQuotaB9 += Math.floor((36-p.hdcp) / 2);
+      });
+      // Use first member's id to track "you" 
+      const hasYou = members.some(p=>p.id==='you'||p.id=='you');
+      return {
+        id: hasYou?'you':team.playerIds[0],
+        name: team.name || members.map(p=>p.name).join(' & '),
+        hdcp: Math.round(members.reduce((a,p)=>a+p.hdcp,0)/members.length),
+        quota: teamQuota, quotaF9: teamQuotaF9, quotaB9: teamQuotaB9,
+        earnedF9: teamF9, earnedB9: teamB9,
+        netF9: teamF9-teamQuotaF9, netB9: teamB9-teamQuotaB9,
+        netTotal: (teamF9+teamB9)-teamQuota,
+        isTeam: true, members: members.map(p=>p.name)
+      };
+    }).filter(Boolean);
+  } else {
+    // Individual mode
+    entries = players.map(playerEntry);
+  }
+
+  const h = R.currentHole;
+  const sortKey = h < 9 ? 'netF9' : 'netTotal';
+  const sorted = [...entries].sort((a,b)=>b[sortKey]-a[sortKey]);
+
+  return {entries, sorted, pts, q, holesPlayed};
+}
+
+function renderQuotaPanel(){
+  const el = document.getElementById('quota-panel');
+  if(!R||!R.games.quota){el.innerHTML='';return;}
+  const qr = calcQuota();
+  if(!qr){el.innerHTML='';return;}
+
+  const h = R.currentHole;
+  const phase = h < 9 ? 'F9' : h < 18 ? 'B9' : 'Final';
+  const you = qr.entries.find(e=>e.id==='you'||e.id=='you');
+  if(!you){el.innerHTML='';return;}
+
+  const fmtNet = n => { const r=Math.round(n); return r===0?'E':r>0?`+${r}`:`${r}`; };
+  const netCol = n => n>=0?'var(--g2)':'var(--red)';
+
+  // Leaderboard rows — show each player's individual quota inline
+  const rows = qr.sorted.map((e,i)=>{
+    const isYou = e.id==='you'||e.id=='you';
+    const netF9str = fmtNet(e.netF9);
+    const netB9str = h>=9 ? fmtNet(e.netB9) : '—';
+    const netTotalStr = fmtNet(e.netTotal);
+    const pos = i===0?'🥇':i===1?'🥈':i===2?'🥉':`${i+1}.`;
+    return `<div style="display:flex;align-items:center;gap:6px;padding:5px 0;border-bottom:1px solid var(--r0);font-size:12px">
+      <span style="width:20px;font-size:11px">${pos}</span>
+      <div style="flex:1">
+        <span style="font-weight:${isYou?'700':'400'};color:${isYou?'var(--g1)':'var(--text)'}">${e.name}${isYou?' ★':''}</span>
+        <span style="font-size:10px;color:var(--r3);margin-left:4px">Q${e.quota}</span>
+      </div>
+      <span style="min-width:32px;text-align:right;font-weight:600;color:${netCol(e.netF9)}">${netF9str}</span>
+      ${h>=9?`<span style="min-width:32px;text-align:right;font-weight:600;color:${netCol(e.netB9)}">${netB9str}</span>`:''}
+      ${h>=9?`<span style="min-width:38px;text-align:right;font-weight:700;color:${netCol(e.netTotal)}">${netTotalStr}</span>`:''}
+    </div>`;
+  }).join('');
+
+  el.innerHTML=`<div class="score-card" style="border-color:#e9d5ff">
+    <div class="score-hdr">🎯 Quota · ${phase} Leaderboard</div>
+    <div style="padding:8px 14px">
+      <div style="display:flex;align-items:center;gap:4px;font-size:10px;font-weight:600;color:var(--r3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:4px;padding-bottom:4px;border-bottom:1px solid var(--r1)">
+        <span style="width:20px"></span>
+        <span style="flex:1">Player</span>
+        <span style="min-width:32px;text-align:right">F9</span>
+        ${h>=9?'<span style="min-width:32px;text-align:right">B9</span>':''}
+        ${h>=9?'<span style="min-width:38px;text-align:right">Total</span>':''}
+      </div>
+      ${rows}
     </div>
   </div>`;
 }
@@ -2660,11 +3149,10 @@ function renderStatusPanel(){
     }
   }
 
-  // H2H per-opponent status cards
+  // H2H per-opponent status cards (always run regardless of team mode)
   R.opps.forEach((o,i)=>{
-    // Get H2H results only (not team)
-    const n=(R.nassauMode==='h2h')?calcNassau(i):null;
-    const c=(R.closeoutMode==='h2h')?calcCloseout(i):null;
+    const n=calcNassau(i);
+    const c=calcCloseout(i);
     if(!n&&!c) return; // skip if no H2H games for this opponent
     const parts=[];
     if(n){
@@ -2757,6 +3245,26 @@ function renderStatusPanel(){
     </div>`;
   }
 
+  // Quota summary
+  const qr=calcQuota();
+  if(qr&&R.games.quota){
+    const h=R.currentHole;
+    const you=qr.entries.find(e=>e.id==='you'||e.id=='you');
+    const leader=qr.sorted[0];
+    const fmtNet=n=>{const r=Math.round(n);return r===0?'E':r>0?`+${r}`:`${r}`;};
+    const myNet=h<9?you?.netF9:you?.netTotal;
+    const leaderNet=h<9?leader?.netF9:leader?.netTotal;
+    const nc=myNet>=0?'var(--g2)':myNet<0?'var(--red)':'var(--r3)';
+    const isLeading = leader?.id==='you'||leader?.id=='you';
+    html+=`<div class="status-card" style="border-color:#e9d5ff">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+        <span style="font-size:14px;font-weight:600">🎯 Quota · ${h<9?'F9':'Total'}</span>
+        <span style="font-family:'DM Serif Display',serif;font-size:16px;color:${nc}">${fmtNet(myNet||0)}</span>
+      </div>
+      <div style="font-size:12px;color:var(--r3)">${isLeading?'You lead 🥇':`Leader: <span style="font-weight:600;color:var(--g1)">${leader?.name} ${fmtNet(leaderNet||0)}</span>`}</div>
+    </div>`;
+  }
+
   el.innerHTML=html||'<div style="padding:14px;text-align:center;color:var(--r3);font-size:14px">Enter scores above to see live status</div>';
 }
 
@@ -2824,6 +3332,8 @@ function renderResults(){
   const wp=wr?calcWolfPayouts(wr):null;
   let html='', yourNet=0;
   document.getElementById('res-eye').textContent=R.date;
+  const resCourse = document.getElementById('res-course');
+  if(resCourse) resCourse.textContent = getActiveCourse().name;
 
   // Helper to get team display names
   const teamName=(teams,side)=>{
@@ -2883,10 +3393,10 @@ function renderResults(){
     }
   }
 
-  // H2H per-opponent cards (only for games in H2H mode)
+  // H2H per-opponent cards (always run — team is additive)
   R.opps.forEach((o,i)=>{
-    const n=(R.nassauMode==='h2h')?calcNassau(i):null;
-    const c=(R.closeoutMode==='h2h')?calcCloseout(i):null;
+    const n=calcNassau(i);
+    const c=calcCloseout(i);
     if(!n&&!c) return;
     let matchNet=0, rows='';
     if(n){
@@ -3049,6 +3559,70 @@ function renderResults(){
     </div>`;
   }
 
+  // Quota results
+  const qr=calcQuota();
+  if(qr&&R.games.quota){
+    const fmtNet=n=>{const r=Math.round(n);return r===0?'E':r>0?`+${r}`:`${r}`;};
+    const netCol=n=>n>=0?'var(--g2)':'var(--red)';
+    const q=qr.q;
+    // Determine winners and payouts
+    const sorted=qr.sorted;
+    let payoutRows='';
+    let quotaNet=0; // "your" net money
+    if(q.payoutType==='overall'){
+      q.spots.forEach((s,i)=>{
+        if(i<sorted.length&&s.amt>0){
+          const winner=sorted[i];
+          const isYou=winner.id==='you'||winner.id=='you';
+          payoutRows+=`<div class="res-row"><span style="color:var(--r4)">${['1st','2nd','3rd','4th','5th','6th'][i]||i+1+'. '}: ${winner.name}</span><span style="font-weight:600;color:${isYou?'var(--g2)':'var(--r4)'}">$${s.amt}</span></div>`;
+          if(isYou) quotaNet+=s.amt;
+        }
+      });
+    } else {
+      // Nassau style — F9, B9, Total winners
+      const f9Winner=sorted.slice().sort((a,b)=>b.netF9-a.netF9)[0];
+      const b9Winner=sorted.slice().sort((a,b)=>b.netB9-a.netB9)[0];
+      const totalWinner=sorted[0];
+      [[f9Winner,'F9',q.f9],[b9Winner,'B9',q.b9],[totalWinner,'Total',q.total]].forEach(([w,lbl,amt])=>{
+        if(!w) return;
+        const isYou=w.id==='you'||w.id=='you';
+        payoutRows+=`<div class="res-row"><span style="color:var(--r4)">${lbl} Winner: ${w.name}</span><span style="font-weight:600;color:${isYou?'var(--g2)':'var(--r4)'}">$${amt}</span></div>`;
+        if(isYou) quotaNet+=amt;
+      });
+    }
+    const you=sorted.find(e=>e.id==='you'||e.id=='you');
+    const youPos=sorted.findIndex(e=>e.id==='you'||e.id=='you')+1;
+    html+=`<div class="res-card">
+      <div class="res-hdr" style="background:#fdf4ff;border-bottom-color:#e9d5ff">
+        <div>
+          <div style="font-size:15px;font-weight:600;color:#6b21a8">🎯 Quota</div>
+          <div style="font-size:11px;color:var(--r3);margin-top:2px">Your quota: ${you?.quota} pts · Finished ${youPos} of ${sorted.length}</div>
+        </div>
+        <span style="font-family:'DM Serif Display',serif;font-size:18px;color:${quotaNet>0?'var(--g2)':'var(--r3)'}">+$${quotaNet}</span>
+      </div>
+      <div style="padding:8px 14px">
+        <div style="font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--r3);margin-bottom:6px">Final Standings</div>
+        ${sorted.map((e,i)=>{
+          const isYou=e.id==='you'||e.id=='you';
+          return `<div class="res-row">
+            <div style="display:flex;align-items:center;gap:5px">
+              <span style="font-size:11px;color:var(--r3);width:16px">${i===0?'🏆':i+1}</span>
+              <span style="font-weight:${isYou?'600':'400'}">${e.name}${isYou?' (you)':''}</span>
+              <span style="font-size:11px;color:var(--r3)">· quota ${e.quota}</span>
+            </div>
+            <div style="display:flex;gap:10px;align-items:center">
+              <span style="font-size:11px;color:var(--r3)">F9 <span style="color:${netCol(e.netF9)};font-weight:600">${fmtNet(e.netF9)}</span></span>
+              <span style="font-size:11px;color:var(--r3)">B9 <span style="color:${netCol(e.netB9)};font-weight:600">${fmtNet(e.netB9)}</span></span>
+              <span style="font-family:'DM Serif Display',serif;font-size:15px;color:${netCol(e.netTotal)}">${fmtNet(e.netTotal)}</span>
+            </div>
+          </div>`;
+        }).join('')}
+      </div>
+      ${payoutRows?`<div style="padding:8px 14px;background:var(--r0)"><div style="font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--r3);margin-bottom:5px">Payouts</div>${payoutRows}</div>`:''}
+    </div>`;
+    yourNet+=quotaNet;
+  }
+
   const dc=yourNet>=0?'var(--gold)':'#ff8080';
   const ds=yourNet>=0?`+$${yourNet}`:`-$${Math.abs(yourNet)}`;
   html+=`<div class="day-total"><span style="color:rgba(255,255,255,.7)">Your Day Net</span><span style="font-family:'DM Serif Display',serif;font-size:28px;color:${dc}">${ds}</span></div>`;
@@ -3082,8 +3656,8 @@ function finishRound(){
   }
   // H2H per-opponent net
   R.opps.forEach((o,i)=>{
-    const n=(R.nassauMode==='h2h')?calcNassau(i):null;
-    const c=(R.closeoutMode==='h2h')?calcCloseout(i):null;
+    const n=calcNassau(i);
+    const c=calcCloseout(i);
     let mn=0;
     if(n) mn+=n.total;
     if(c) mn+=(c.mainPay||0)+(c.pressPay||0);
@@ -3094,17 +3668,39 @@ function finishRound(){
   if(jr){ dayNet+=jr.myNet; if(jr.myNet!==0) breakdown.push({label:'Junk',net:jr.myNet}); }
   const vr=calcVegas();
   if(vr){ dayNet+=vr.myDollars; if(vr.myDollars!==0) breakdown.push({label:'Vegas',net:vr.myDollars}); }
+  // Quota payout
+  if(R.games.quota){
+    const qr=calcQuota();
+    if(qr){
+      const q=qr.q;
+      let quotaNet=0;
+      if(q.payoutType==='overall'){
+        qr.sorted.forEach((e,i)=>{
+          if(i<q.spots.length&&(e.id==='you'||e.id=='you')) quotaNet+=q.spots[i].amt||0;
+        });
+      } else {
+        const f9W=qr.sorted.slice().sort((a,b)=>b.netF9-a.netF9)[0];
+        const b9W=qr.sorted.slice().sort((a,b)=>b.netB9-a.netB9)[0];
+        const totW=qr.sorted[0];
+        if(f9W?.id==='you'||f9W?.id=='you') quotaNet+=q.f9;
+        if(b9W?.id==='you'||b9W?.id=='you') quotaNet+=q.b9;
+        if(totW?.id==='you'||totW?.id=='you') quotaNet+=q.total;
+      }
+      dayNet+=quotaNet;
+      if(quotaNet!==0) breakdown.push({label:'Quota',net:quotaNet});
+    }
+  }
 
   const games=Object.entries(R.games).filter(([,v])=>v).map(([k])=>
-    k==='nassau'?'Nassau':k==='closeout'?'Closeout':k==='wolf'?'Wolf':k==='junk'?'Junk':'Vegas').join(', ');
+    k==='nassau'?'Nassau':k==='closeout'?'Closeout':k==='wolf'?'Wolf':k==='junk'?'Junk':k==='vegas'?'Vegas':'Quota').join(', ');
 
   // Save round
-  DB.rounds.unshift({date:R.date,course:'Musket Ridge GC',players:`${R.you.name} + ${R.opps.length}`,games,net:dayNet,breakdown,scores:R.scores,opps:R.opps,you:R.you,matches:R.matches,bets:R.bets,wolfHoles:R.wolfHoles,nassauPresses:R.nassauPresses,junkHoles:R.junkHoles});
+  DB.rounds.unshift({date:R.date,course:getActiveCourse().name,players:`${R.you.name} + ${R.opps.length}`,games,net:dayNet,breakdown,scores:R.scores,opps:R.opps,you:R.you,matches:R.matches,bets:R.bets,wolfHoles:R.wolfHoles,nassauPresses:R.nassauPresses,junkHoles:R.junkHoles});
 
   // Update ledger & h2h — H2H opponents only
   R.opps.forEach((o,i)=>{
-    const n=(R.nassauMode==='h2h')?calcNassau(i):null;
-    const c=(R.closeoutMode==='h2h')?calcCloseout(i):null;
+    const n=calcNassau(i);
+    const c=calcCloseout(i);
     let mn=0;
     if(n) mn+=n.total;
     if(c) mn+=(c.mainPay||0)+(c.pressPay||0);
@@ -3130,7 +3726,7 @@ function finishRound(){
     const key=normName(p.name), pnet=i===0?dayNet:-dayNet;
     const ex=DB.roster.findIndex(r=>normName(r.name)===key);
     if(ex>=0){ DB.roster[ex].rounds++;DB.roster[ex].hdcp=p.hdcp; }
-    else DB.roster.push({name:p.name,hdcp:p.hdcp,rounds:1});
+    else DB.roster.push({name:p.name,hdcp:p.hdcp,rounds:1,mobile:'',venmo:''});
   });
 
   saveDB();
@@ -3174,28 +3770,34 @@ function renderHistory(){
 // ═══════════════════════════════════════════════════
 function renderLedger(){
   const el=document.getElementById('ledger-body');
+  const staticEl=document.getElementById('ledger-static');
   const ledger=Object.values(DB.ledger);
   const h2h=DB.h2h;
   if(!ledger.length){
+    if(staticEl) staticEl.innerHTML='';
     el.innerHTML='<div class="empty"><div class="empty-ico">💰</div><p>No money tracked yet.<br>Complete rounds to see the ledger.</p></div>';
     return;
   }
   const sorted=[...ledger].sort((a,b)=>b.net-a.net);
   const myTotal=sorted.reduce((a,p)=>a+p.net,0);
-  const tc=myTotal>=0?'var(--g2)':'var(--red)';
-  el.innerHTML=`
-    <div style="background:var(--g1);border-radius:var(--rad);padding:14px 16px;margin-bottom:16px;display:flex;justify-content:space-between;align-items:center">
+
+  // Static section — Season Net total + column headers (never scrolls)
+  if(staticEl) staticEl.innerHTML=`
+    <div style="background:var(--g1);border-radius:var(--rad);padding:12px 16px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center">
       <span style="color:rgba(255,255,255,.7);font-size:13px">Season Net vs All</span>
-      <span style="font-family:'DM Serif Display',serif;font-size:28px;color:${myTotal>=0?'var(--gold)':'#ff8080'}">${myTotal>=0?'+':''}$${myTotal}</span>
+      <span style="font-family:'DM Serif Display',serif;font-size:26px;color:${myTotal>=0?'var(--gold)':'#ff8080'}">${myTotal>=0?'+':''}$${myTotal}</span>
     </div>
-    <div class="ledger-card">
-      <div class="ledger-hdr">
-        <span style="color:rgba(255,255,255,.7);font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.08em">Player</span>
-        <div style="display:flex;gap:24px">
-          <span style="color:rgba(255,255,255,.7);font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.08em">Record</span>
-          <span style="color:rgba(255,255,255,.7);font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;min-width:48px;text-align:right">Net</span>
-        </div>
+    <div style="background:var(--g1);border-radius:var(--rad) var(--rad) 0 0;padding:8px 14px;display:flex;justify-content:space-between;align-items:center">
+      <span style="color:rgba(255,255,255,.7);font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.08em">Player</span>
+      <div style="display:flex;gap:24px">
+        <span style="color:rgba(255,255,255,.7);font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.08em">Record</span>
+        <span style="color:rgba(255,255,255,.7);font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;min-width:48px;text-align:right">Net</span>
       </div>
+    </div>`;
+
+  // Scrollable rows only
+  el.innerHTML=`
+    <div class="ledger-card" style="border-radius:0 0 var(--rad) var(--rad);margin-top:0">
       ${sorted.map((p,i)=>{
         const nc=p.net>0?'var(--g2)':p.net<0?'var(--red)':'var(--r3)';
         const ns=(p.net>=0?'+$':'-$')+Math.abs(p.net);
@@ -3317,7 +3919,7 @@ function addToRoster(){
   if(existing>=0){
     DB.roster[existing].hdcp = hdcp;
   } else {
-    DB.roster.push({name, hdcp, rounds:0});
+    DB.roster.push({name, hdcp, rounds:0, mobile:'', venmo:''});
   }
   saveDB();
   renderRoster();
@@ -3332,6 +3934,8 @@ function openEditRoster(idx){
   document.getElementById('er-idx').value = idx;
   document.getElementById('er-name').value = p.name;
   document.getElementById('er-hdcp').value = p.hdcp;
+  document.getElementById('er-mobile').value = p.mobile || '';
+  document.getElementById('er-venmo').value = p.venmo || '';
   openModal('m-edit-roster');
 }
 
@@ -3339,9 +3943,13 @@ function saveRosterEdit(){
   const idx = +document.getElementById('er-idx').value;
   const name = document.getElementById('er-name').value.trim();
   const hdcp = parseFloat(document.getElementById('er-hdcp').value)||0;
+  const mobile = document.getElementById('er-mobile').value.trim();
+  const venmo = document.getElementById('er-venmo').value.trim().replace(/^@/,'');
   if(!name||idx<0||idx>=DB.roster.length) return;
   DB.roster[idx].name = name;
   DB.roster[idx].hdcp = hdcp;
+  DB.roster[idx].mobile = mobile;
+  DB.roster[idx].venmo = venmo;
   saveDB();
   renderRoster();
   closeModal('m-edit-roster');
@@ -3365,15 +3973,30 @@ function renderRoster(){
   }
   const sorted=[...roster].map((p,i)=>({...p,origIdx:i})).sort((a,b)=>b.rounds-a.rounds);
   el.innerHTML=`<div class="ledger-card">
-    ${sorted.map((p,i)=>`
-      <div class="ledger-row" style="cursor:pointer" onclick="openEditRoster(${p.origIdx})">
-        <div class="av ${AV[i%AV.length]}" style="width:36px;height:36px;font-size:13px">${p.name[0].toUpperCase()}</div>
-        <div style="flex:1;margin-left:10px">
-          <div style="font-size:15px;font-weight:500">${p.name}</div>
-          <div style="font-size:12px;color:var(--r3)">Hdcp ${p.hdcp}${p.rounds?' · '+p.rounds+' round'+(p.rounds!==1?'s':''):' · Not yet played'}</div>
+    ${sorted.map((p,i)=>{
+      const hasMobile = p.mobile && p.mobile.trim();
+      const hasVenmo = p.venmo && p.venmo.trim();
+      const mobileBadge = hasMobile
+        ? `<span style="font-size:11px;color:var(--g1);background:var(--gp);padding:1px 7px;border-radius:20px;font-weight:500">📱 ${p.mobile}</span>`
+        : `<span style="font-size:11px;color:var(--r2);background:var(--r0);padding:1px 7px;border-radius:20px">📱 No mobile</span>`;
+      const venmoBadge = hasVenmo
+        ? `<span style="font-size:11px;color:#3d95ce;background:#e8f4fb;padding:1px 7px;border-radius:20px;font-weight:500">💸 @${p.venmo}</span>`
+        : `<span style="font-size:11px;color:var(--r2);background:var(--r0);padding:1px 7px;border-radius:20px">💸 No Venmo</span>`;
+      return `<div style="padding:10px 14px;border-bottom:1px solid var(--r0);cursor:pointer" onclick="openEditRoster(${p.origIdx})">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px">
+          <div class="av ${AV[i%AV.length]}" style="width:36px;height:36px;font-size:13px;flex-shrink:0">${p.name[0].toUpperCase()}</div>
+          <div style="flex:1">
+            <div style="font-size:15px;font-weight:500">${p.name}</div>
+            <div style="font-size:12px;color:var(--r3)">Hdcp ${p.hdcp}${p.rounds?' · '+p.rounds+' round'+(p.rounds!==1?'s':''):' · Not yet played'}</div>
+          </div>
+          <span style="font-size:18px;color:var(--r2)">›</span>
         </div>
-        <span style="font-size:18px;color:var(--r2)">›</span>
-      </div>`).join('')}
+        <div style="display:flex;gap:6px;flex-wrap:wrap;padding-left:46px">
+          ${mobileBadge}
+          ${venmoBadge}
+        </div>
+      </div>`;
+    }).join('')}
   </div>`;
 }
 
@@ -3855,13 +4478,211 @@ function saveAdminEdits(){
 // ═══════════════════════════════════════════════════
 //  INIT
 // ═══════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════
+//  COURSES
+// ═══════════════════════════════════════════════════
+
+function renderHomeCourseSelector(){
+  const el = document.getElementById('h-course-selector');
+  if(!el) return;
+  const active = getActiveCourse();
+  const totalPar = active.par.reduce((a,b)=>a+b,0);
+
+  el.innerHTML = `<div style="background:var(--white);border:1.5px solid var(--r1);border-radius:var(--rad);padding:10px 14px;display:flex;align-items:center;gap:10px">
+    <div style="flex:1;min-width:0">
+      <div style="font-size:10px;font-weight:600;color:var(--r3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:2px">Playing at</div>
+      <div style="font-size:15px;font-weight:600;color:var(--g1);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">📍 ${active.name}</div>
+      <div style="font-size:12px;color:var(--r3)">${active.location?active.location+' · ':''}Par ${totalPar}${active.yardage?' · '+active.yardage+' yds':''}</div>
+    </div>
+    <button onclick="openCoursePicker()" style="flex-shrink:0;height:34px;padding:0 14px;border-radius:20px;border:1.5px solid var(--g2);background:var(--white);color:var(--g1);font-size:12px;font-weight:600;cursor:pointer">Change</button>
+  </div>`;
+}
+
+function openCoursePicker(){
+  const active = getActiveCourse();
+  const courses = DB.courses || [];
+  const el = document.getElementById('course-picker-list');
+  el.innerHTML = courses.map((c,i)=>{
+    const isActive = c.id===active.id || c.isActive;
+    const totalPar = c.par.reduce((a,b)=>a+b,0);
+    return `<div onclick="setActiveCourse(${i});closeModal('m-course-picker')"
+      style="display:flex;align-items:center;gap:12px;padding:12px 4px;border-bottom:1px solid var(--r0);cursor:pointer">
+      <div style="width:22px;height:22px;border-radius:50%;border:2px solid ${isActive?'var(--g2)':'var(--r1)'};
+        background:${isActive?'var(--g2)':'var(--white)'};display:flex;align-items:center;justify-content:center;flex-shrink:0">
+        ${isActive?'<span style="color:#fff;font-size:12px">✓</span>':''}
+      </div>
+      <div style="flex:1;min-width:0">
+        <div style="font-size:14px;font-weight:${isActive?'600':'400'};color:${isActive?'var(--g1)':'var(--text)'};
+          white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${c.name}</div>
+        <div style="font-size:11px;color:var(--r3)">${c.location?c.location+' · ':''}Par ${totalPar}${c.yardage?' · '+c.yardage+' yds':''}</div>
+      </div>
+      ${isActive?'<span style="font-size:11px;background:var(--g2);color:#fff;padding:2px 8px;border-radius:20px;flex-shrink:0">Active</span>':''}
+    </div>`;
+  }).join('');
+  openModal('m-course-picker');
+}
+
+function renderCourses(){
+  const el = document.getElementById('courses-body');
+  if(!el) return;
+  const courses = DB.courses || [];
+  const active = getActiveCourse();
+
+  if(!courses.length){
+    el.innerHTML='<div class="empty"><div class="empty-ico">🏌️</div><p>No courses yet.</p></div>';
+    return;
+  }
+
+  el.innerHTML = courses.map((c,i)=>{
+    const isActive = c.isActive || c.id===active.id;
+    const totalPar = c.par.reduce((a,b)=>a+b,0);
+    const f9Par = c.par.slice(0,9).reduce((a,b)=>a+b,0);
+    const b9Par = c.par.slice(9).reduce((a,b)=>a+b,0);
+    return `<div class="card" style="margin-bottom:12px;${isActive?'border-color:var(--g2);border-width:2px':''}">
+      <div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:10px">
+        <div style="flex:1">
+          <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
+            <span style="font-size:16px;font-weight:600;color:var(--g1)">${c.name}</span>
+            ${isActive?`<span style="background:var(--g2);color:#fff;font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px">Active</span>`:''}
+            ${c.isDefault?`<span style="background:var(--r0);color:var(--r3);font-size:10px;padding:2px 8px;border-radius:20px">Default</span>`:''}
+          </div>
+          <div style="font-size:12px;color:var(--r3);margin-top:2px">${c.location||''}</div>
+          <div style="font-size:12px;color:var(--r3)">Par ${totalPar} · F9 ${f9Par} · B9 ${b9Par} · ${c.yardage||'—'} yds</div>
+        </div>
+        <div style="display:flex;gap:6px;flex-shrink:0">
+          <button onclick="openEditCourse(${i})" style="height:30px;padding:0 14px;border-radius:20px;border:1.5px solid var(--r1);background:var(--white);color:var(--r4);font-size:11px;font-weight:500;cursor:pointer">Edit</button>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(18,1fr);gap:2px;font-size:9px;text-align:center">
+        ${c.par.map((p,h)=>`<div style="background:var(--r0);border-radius:3px;padding:2px 0">
+          <div style="color:var(--r3);font-size:8px">${h+1}</div>
+          <div style="font-weight:600;color:var(--g1)">${p}</div>
+          <div style="color:var(--r3)">${c.hcp[h]}</div>
+        </div>`).join('')}
+      </div>
+      <div style="display:flex;justify-content:space-between;margin-top:4px;font-size:9px;color:var(--r3)">
+        <span>Hole · Par · HCP</span>
+        <span>${(c.yds||[]).reduce((a,b)=>a+b,0)} yds</span>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function buildCourseHoleInputs(course){
+  const el = document.getElementById('course-hole-inputs');
+  if(!el) return;
+  el.innerHTML = Array.from({length:18},(_,i)=>{
+    const par = course?.par[i]||4;
+    const hcp = course?.hcp[i]||i+1;
+    const yds = course?.yds[i]||400;
+    return `<div style="display:grid;grid-template-columns:40px 1fr 1fr 1fr;gap:4px;margin-bottom:4px;align-items:center">
+      <span style="font-size:12px;font-weight:600;color:var(--r3)">H${i+1}</span>
+      <input type="number" id="ch-par-${i}" value="${par}" min="3" max="6"
+        style="height:32px;border:1px solid var(--r1);border-radius:var(--rad-xs);text-align:center;font-size:13px;width:100%;outline:none">
+      <input type="number" id="ch-hcp-${i}" value="${hcp}" min="1" max="18"
+        style="height:32px;border:1px solid var(--r1);border-radius:var(--rad-xs);text-align:center;font-size:13px;width:100%;outline:none">
+      <input type="number" id="ch-yds-${i}" value="${yds}" min="50" max="700"
+        style="height:32px;border:1px solid var(--r1);border-radius:var(--rad-xs);text-align:center;font-size:13px;width:100%;outline:none">
+    </div>`;
+  }).join('');
+}
+
+function openAddCourse(){
+  document.getElementById('course-modal-title').textContent = 'Add Course';
+  document.getElementById('course-idx').value = '-1';
+  document.getElementById('course-name').value = '';
+  document.getElementById('course-location').value = '';
+  document.getElementById('course-yardage').value = '';
+  document.getElementById('course-delete-btn').style.display = 'none';
+  buildCourseHoleInputs(null);
+  openModal('m-edit-course');
+}
+
+function openEditCourse(idx){
+  const c = DB.courses[idx];
+  if(!c) return;
+  document.getElementById('course-modal-title').textContent = 'Edit Course';
+  document.getElementById('course-idx').value = idx;
+  document.getElementById('course-name').value = c.name;
+  document.getElementById('course-location').value = c.location||'';
+  document.getElementById('course-yardage').value = c.yardage||'';
+  document.getElementById('course-delete-btn').style.display = c.isDefault ? 'none' : 'block';
+  buildCourseHoleInputs(c);
+  openModal('m-edit-course');
+}
+
+function saveCourse(){
+  const idx = +document.getElementById('course-idx').value;
+  const name = document.getElementById('course-name').value.trim();
+  if(!name){ alert('Please enter a course name.'); return; }
+
+  const par=[], hcp=[], yds=[];
+  for(let i=0;i<18;i++){
+    par.push(+document.getElementById(`ch-par-${i}`).value||4);
+    hcp.push(+document.getElementById(`ch-hcp-${i}`).value||i+1);
+    yds.push(+document.getElementById(`ch-yds-${i}`).value||400);
+  }
+
+  // Validate HCP ranks 1-18 unique
+  const hcpSorted = [...hcp].sort((a,b)=>a-b);
+  const valid = hcpSorted.every((v,i)=>v===i+1);
+  if(!valid){
+    alert('HCP ranks must be 1–18, each used exactly once.');
+    return;
+  }
+
+  const course = {
+    id: idx>=0 ? DB.courses[idx].id : 'course-'+Date.now(),
+    name,
+    location: document.getElementById('course-location').value.trim(),
+    yardage: +document.getElementById('course-yardage').value||par.reduce((a,b)=>a+b,0)*90,
+    par, hcp, yds,
+    isActive: idx>=0 ? DB.courses[idx].isActive : false,
+    isDefault: idx>=0 ? DB.courses[idx].isDefault : false
+  };
+
+  if(idx>=0) DB.courses[idx] = course;
+  else DB.courses.push(course);
+
+  saveDB();
+  applyActiveCourse();
+  renderCourses();
+  renderHomeCourseSelector();
+  closeModal('m-edit-course');
+}
+
+function deleteCourse(){
+  const idx = +document.getElementById('course-idx').value;
+  if(idx<0) return;
+  const c = DB.courses[idx];
+  if(c?.isDefault){ alert("Can't delete the default course."); return; }
+  openAbandonModal(
+    `Delete ${c?.name}? This cannot be undone.`,
+    ()=>{
+      const wasActive = DB.courses[idx]?.isActive;
+      DB.courses.splice(idx,1);
+      if(wasActive && DB.courses.length) DB.courses[0].isActive=true;
+      saveDB(); applyActiveCourse(); renderCourses(); closeModal('m-edit-course');
+    },
+    {title:'Delete Course?', confirmText:'Yes, Delete', cancelText:'Cancel'}
+  );
+}
+
+function setActiveCourse(idx){
+  DB.courses.forEach((c,i)=>c.isActive=(i===idx));
+  saveDB();
+  applyActiveCourse();
+  renderCourses();
+  renderHomeCourseSelector();
+}
+
 function init(){
   loadDB();
+  applyActiveCourse();
   loadR();
   loadT();
   renderHome();
   updateHomeCTA();
-  // Kick off tournament scoring if screen is opened
   document.getElementById('s-t-scoring').addEventListener('animationend', ()=>{ if(T) initTScoring(); },{once:true});
 }
 
