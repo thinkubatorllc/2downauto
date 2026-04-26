@@ -111,6 +111,9 @@ body{font-family:var(--sans);background:var(--bg);color:var(--text);
 .tog-k{width:20px;height:20px;background:#fff;border-radius:50%;position:absolute;
   top:3px;left:3px;transition:left .2s;box-shadow:0 1px 4px rgba(0,0,0,.18)}
 .tog.on .tog-k{left:21px}
+.tog-sm{width:34px;height:20px;border-radius:10px}
+.tog-sm .tog-k{width:14px;height:14px;top:3px;left:3px}
+.tog-sm.on .tog-k{left:17px}
 
 /* ─── PILLS ──────────────────────────────────────────── */
 .pills{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
@@ -238,9 +241,9 @@ body{font-family:var(--sans);background:var(--bg);color:var(--text);
   padding:12px 14px;margin-bottom:10px}
 .wolf-card.last3{border-color:var(--gold-hi)}
 .wolf-strip{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:10px}
-.wolf-chip{padding:4px 9px;border-radius:6px;font-size:12px;font-weight:400;
-  background:var(--surface);color:var(--text-2)}
-.wolf-chip.cap{background:var(--green);color:#fff;font-weight:500}
+.wolf-chip{padding:4px 9px;border-radius:6px;font-size:12px;font-weight:500;
+  background:var(--surface);color:var(--text);border:1px solid var(--border-hi)}
+.wolf-chip.cap{background:var(--green);color:#fff;font-weight:600;border-color:var(--green)}
 .partner-btn{flex:1;min-width:80px;height:46px;border-radius:var(--rad-s);border:1.5px solid;
   font-size:13px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif}
 .partner-btn.avail{background:var(--green-dim);border-color:rgba(77,138,40,0.3);color:#7bc44a}
@@ -344,6 +347,10 @@ body{font-family:var(--sans);background:var(--bg);color:var(--text);
   <div class="hdr"><div class="hdr-eye">Step 1 of 3</div><h1>Who's playing?</h1></div>
   <div class="steps"><div class="step active"></div><div class="step"></div><div class="step"></div></div>
   <div class="scroll body">
+    <div style="margin-bottom:14px;padding:14px 16px;background:var(--gold-dim);border:1.5px solid rgba(200,149,42,0.4);border-radius:var(--rad-s)">
+      <div style="font-size:13px;font-weight:600;color:var(--gold-hi);margin-bottom:4px">Who are you playing with?</div>
+      <div style="font-size:12px;color:var(--text-2);line-height:1.6">Add every golfer you want to track a match with — <strong style="color:var(--text)">individual side bets, team games, or both.</strong> You can pull from your saved group or add a new player on the fly.</div>
+    </div>
     <div class="card">
       <div class="card-title">You</div>
       <div class="p-row" style="border:none;padding:4px 0">
@@ -375,7 +382,10 @@ body{font-family:var(--sans);background:var(--bg);color:var(--text);
   <div class="steps"><div class="step done"></div><div class="step active"></div><div class="step"></div></div>
   <div class="scroll body">
 
-    <!-- Nassau -->
+    <div style="margin-bottom:14px;padding:14px 16px;background:var(--gold-dim);border:1.5px solid rgba(200,149,42,0.4);border-radius:var(--rad-s)">
+      <div style="font-size:13px;font-weight:600;color:var(--gold-hi);margin-bottom:4px">Select your games</div>
+      <div style="font-size:12px;color:var(--text-2);line-height:1.6">Pick any combination of games you want to track this round. <strong style="color:var(--text)">Multiple games</strong> can run simultaneously and each can be played as <strong style="color:var(--text)">Individual, Team, or both at the same time.</strong></div>
+    </div>
     <div class="gc" id="gc-nassau">
       <div class="gc-hdr" onclick="toggleGame('nassau')">
         <div class="gc-icon" style="background:var(--gt)">🏌️</div>
@@ -436,13 +446,29 @@ body{font-family:var(--sans);background:var(--bg);color:var(--text);
       <div class="gc-body">
         <div class="bet-row">
           <div class="bet-f"><label>$ / Point</label><input class="bet-in" type="number" id="w-pt" value="2" min="1"></div>
-          <div class="bet-f"><label>Lone Wolf</label><div style="height:38px;display:flex;align-items:center;font-size:14px;font-weight:600;color:var(--text)">2× pts</div></div>
-          <div class="bet-f"><label>Blind Wolf</label><div style="height:38px;display:flex;align-items:center;font-size:14px;font-weight:600;color:var(--text)">3× pts</div></div>
         </div>
-        <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-top:1px solid var(--border);margin-top:4px">
+        <div class="card-title" style="margin-bottom:6px;margin-top:8px">Solo Wolf Multipliers</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:4px">
+          <div style="text-align:center">
+            <div style="font-size:10px;color:var(--text-3);margin-bottom:3px">Blind Wolf ×</div>
+            <input class="bet-in" type="number" id="w-blind-mult" value="4" min="1" max="10" style="width:100%;text-align:center">
+            <div style="font-size:9px;color:var(--text-3);margin-top:2px">before anyone hits</div>
+          </div>
+          <div style="text-align:center">
+            <div style="font-size:10px;color:var(--text-3);margin-bottom:3px">Lone Wolf ×</div>
+            <input class="bet-in" type="number" id="w-lone-mult" value="3" min="1" max="10" style="width:100%;text-align:center">
+            <div style="font-size:9px;color:var(--text-3);margin-top:2px">after wolf hits first</div>
+          </div>
+          <div style="text-align:center">
+            <div style="font-size:10px;color:var(--text-3);margin-bottom:3px">Solo Wolf ×</div>
+            <input class="bet-in" type="number" id="w-solo-mult" value="2" min="1" max="10" style="width:100%;text-align:center">
+            <div style="font-size:9px;color:var(--text-3);margin-top:2px">after all hit, goes alone</div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-top:1px solid var(--border);margin-top:8px">
           <div>
             <div style="font-size:14px;font-weight:500">Allow Bumps</div>
-            <div style="font-size:11px;color:var(--text-3)">Losing team can double the rate before tee shots</div>
+            <div style="font-size:11px;color:var(--text-3)">Any player can double the rate between holes</div>
           </div>
           <div class="tog" id="tog-wolf-bump" onclick="S.bets.wolf.bump=!S.bets.wolf.bump;this.classList.toggle('on',S.bets.wolf.bump)"><div class="tog-k"></div></div>
         </div>
@@ -503,7 +529,14 @@ body{font-family:var(--sans);background:var(--bg);color:var(--text);
       <div class="gc-body">
         <div class="bet-row">
           <div class="bet-f"><label>$ / Point</label><input class="bet-in" type="number" id="v-pt" value="1" min="1"></div>
-          <div class="bet-f"><label>Bump</label><div style="height:38px;display:flex;align-items:center;font-size:13px;color:var(--text);font-weight:600">2× current rate</div></div>
+          <div class="bet-f"><label>Max Score</label><input class="bet-in" type="number" id="v-max" value="2" min="1" max="5" title="Max strokes over par per player"></div>
+        </div>
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:6px 0;border-top:1px solid var(--border);margin-top:2px;margin-bottom:6px">
+          <div>
+            <div style="font-size:13px;font-weight:500">Cap scores at par + max</div>
+            <div style="font-size:11px;color:var(--text-3)">Most common — limits blowup holes. Toggle off for true score.</div>
+          </div>
+          <div class="tog on" id="tog-vegas-cap" onclick="S.bets.vegas.cap=!S.bets.vegas.cap;this.classList.toggle('on',S.bets.vegas.cap)"><div class="tog-k"></div></div>
         </div>
         <div class="card-title" style="margin-bottom:6px">Who's in Vegas? <span style="font-size:11px;font-weight:400;color:var(--text-3)">(need exactly 4)</span></div>
         <div id="vegas-player-checklist" style="margin-bottom:10px"></div>
@@ -622,6 +655,95 @@ body{font-family:var(--sans);background:var(--bg);color:var(--text);
       </div>
     </div>
 
+    <!-- Stableford -->
+    <div class="gc" id="gc-stableford">
+      <div class="gc-hdr" onclick="toggleGame('stableford')">
+        <div class="gc-icon" style="background:#f0fdf4">⭐</div>
+        <div style="flex:1"><div class="gc-name">Stableford</div><div class="gc-desc">Accumulate points from 0 · highest score wins · 1st 9 · 2nd 9 · Total</div></div>
+        <div class="tog" id="tog-stableford"><div class="tog-k"></div></div>
+      </div>
+      <div class="gc-body">
+        <!-- Point Values -->
+        <div class="card-title" style="margin-bottom:6px">Point Values (editable)</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr 1fr;gap:6px;margin-bottom:12px">
+          <div style="text-align:center">
+            <div style="font-size:10px;color:var(--text-3);margin-bottom:3px">Triple+</div>
+            <input class="bet-in" type="number" id="sf-triple" value="0" style="width:100%;text-align:center">
+          </div>
+          <div style="text-align:center">
+            <div style="font-size:10px;color:var(--text-3);margin-bottom:3px">Double</div>
+            <input class="bet-in" type="number" id="sf-double" value="0" style="width:100%;text-align:center">
+          </div>
+          <div style="text-align:center">
+            <div style="font-size:10px;color:var(--text-3);margin-bottom:3px">Bogey</div>
+            <input class="bet-in" type="number" id="sf-bogey" value="1" style="width:100%;text-align:center">
+          </div>
+          <div style="text-align:center">
+            <div style="font-size:10px;color:var(--text-3);margin-bottom:3px">Par</div>
+            <input class="bet-in" type="number" id="sf-par" value="2" style="width:100%;text-align:center">
+          </div>
+          <div style="text-align:center">
+            <div style="font-size:10px;color:var(--text-3);margin-bottom:3px">Birdie</div>
+            <input class="bet-in" type="number" id="sf-birdie" value="3" style="width:100%;text-align:center">
+          </div>
+          <div style="text-align:center">
+            <div style="font-size:10px;color:var(--text-3);margin-bottom:3px">Eagle</div>
+            <input class="bet-in" type="number" id="sf-eagle" value="5" style="width:100%;text-align:center">
+          </div>
+        </div>
+        <!-- Payout Format -->
+        <div class="card-title" style="margin-bottom:6px">Payout Format</div>
+        <div style="display:flex;gap:6px;margin-bottom:10px">
+          <button id="sfp-overall" onclick="setSFPayout('overall')"
+            style="flex:1;height:34px;border-radius:20px;border:1px solid rgba(77,138,40,0.4);background:var(--green);color:#fff;font-size:12px;font-weight:500;cursor:pointer;font-family:var(--sans)">🏆 Overall</button>
+          <button id="sfp-nassau" onclick="setSFPayout('nassau')"
+            style="flex:1;height:34px;border-radius:20px;border:1px solid var(--border-hi);background:var(--card);color:var(--text-2);font-size:12px;font-weight:500;cursor:pointer;font-family:var(--sans)">🔀 1st 9 / 2nd 9 / Total</button>
+        </div>
+        <div id="sf-payout-overall" style="margin-bottom:10px">
+          <div class="note" style="margin-bottom:8px">Each player contributes a buy-in. Top finishers split the total pot by percentage.</div>
+          <div class="bet-row" style="margin-bottom:8px">
+            <div class="bet-f"><label>$ Buy-in / player</label><input class="bet-in" type="number" id="sf-buyin" value="20" min="1" onchange="renderSFSpotsBuilder()"></div>
+            <div class="bet-f"><label>Spots paid</label><input class="bet-in" type="number" id="sf-spots" value="3" min="1" max="6" style="text-align:center" onchange="renderSFSpotsBuilder()"></div>
+          </div>
+          <div style="font-size:11px;color:var(--text-3);margin-bottom:8px">Set % for each place — must total 100%</div>
+          <div id="sf-spots-rows"></div>
+          <div id="sf-pot-preview" style="font-size:11px;color:var(--text-3);margin-top:6px"></div>
+        </div>
+        <div id="sf-payout-nassau" style="display:none;margin-bottom:10px">
+          <div class="note" style="margin-bottom:8px">Each player contributes the amounts below per segment. Winner of each segment collects from all other players.</div>
+          <div class="bet-row">
+            <div class="bet-f"><label>$ / player · 1st 9</label><input class="bet-in" type="number" id="sf-f9" value="10" min="1"></div>
+            <div class="bet-f"><label>$ / player · 2nd 9</label><input class="bet-in" type="number" id="sf-b9" value="10" min="1"></div>
+            <div class="bet-f"><label>$ / player · Total</label><input class="bet-in" type="number" id="sf-total" value="20" min="1"></div>
+          </div>
+        </div>
+        <!-- Who's in -->
+        <div class="card-title" style="margin-bottom:6px">Who's in Stableford?</div>
+        <div id="sf-player-checklist" style="margin-bottom:10px"></div>
+        <!-- Format -->
+        <div class="card-title" style="margin-bottom:6px">Format</div>
+        <div style="display:flex;gap:6px;margin-bottom:8px">
+          <button id="sf-individual" onclick="setSFFormat('individual')"
+            style="flex:1;height:34px;border-radius:20px;border:1px solid rgba(77,138,40,0.4);background:var(--green);color:#fff;font-size:12px;font-weight:500;cursor:pointer;font-family:var(--sans)">👤 Individual</button>
+          <button id="sf-team" onclick="setSFFormat('team')"
+            style="flex:1;height:34px;border-radius:20px;border:1px solid var(--border-hi);background:var(--card);color:var(--text-2);font-size:12px;font-weight:500;cursor:pointer;font-family:var(--sans)">👥 Team</button>
+        </div>
+        <div id="sf-team-options" style="display:none;margin-bottom:8px">
+          <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px">
+            <label style="font-size:13px;font-weight:500;flex:1">Team size</label>
+            <select id="sf-team-size" class="bet-in" style="width:80px" onchange="renderSFTeamBuilder()">
+              <option value="2">2</option>
+              <option value="3">3</option>
+              <option value="4">4</option>
+            </select>
+          </div>
+          <div class="note" style="margin-bottom:8px">All team members' points add together each hole.</div>
+          <div id="sf-team-builder"></div>
+        </div>
+        <div class="note">Everyone starts at 0 and accumulates points. Highest total wins. Strokes are applied per the Games & Strokes page.</div>
+      </div>
+    </div>
+
     <!-- 6,6,6 -->
     <div class="gc" id="gc-game666">
       <div class="gc-hdr" onclick="toggleGame('game666')">
@@ -635,6 +757,44 @@ body{font-family:var(--sans);background:var(--bg);color:var(--text);
           <div class="bet-f"><label>$ / Press</label><input class="bet-in" type="number" id="g666-press" value="10" min="1" placeholder="same as seg"></div>
         </div>
         <div class="note" style="margin-bottom:10px">Requires exactly 4 players. Each segment is a 6-hole best ball match. Auto-press when down 2 within a segment (not on hole 6).</div>
+        <!-- Junk add-on -->
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-top:1px solid var(--border);margin-top:4px">
+          <div>
+            <div style="font-size:14px;font-weight:500;color:var(--text)">Add Junk</div>
+            <div style="font-size:11px;color:var(--text-3)">Birdies · Eagles · Partner Par — team vs team per segment</div>
+          </div>
+          <div class="tog" id="tog-g666-junk" onclick="toggle666Junk(this)"><div class="tog-k"></div></div>
+        </div>
+        <div id="g666-junk-body" style="display:none">
+          <div class="bet-row" style="margin-top:8px">
+            <div class="bet-f"><label>$ / Junk pt</label><input class="bet-in" type="number" id="g666-junk-pt" value="1" min="1"></div>
+          </div>
+          <div class="card-title" style="margin:8px 0 6px">Categories & Point Values</div>
+          <div style="display:flex;flex-direction:column;gap:6px">
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:7px 10px;background:var(--surface);border-radius:var(--rad-xs);border:1px solid var(--border)">
+              <div style="display:flex;align-items:center;gap:8px">
+                <div class="tog tog-sm on" id="tog-g666-birdies" onclick="this.classList.toggle('on')"><div class="tog-k"></div></div>
+                <span style="font-size:13px;color:var(--text)">🐦 Birdies</span>
+              </div>
+              <input class="bet-in" type="number" id="g666-junk-birdie" value="2" min="1" style="width:56px;text-align:center">
+            </div>
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:7px 10px;background:var(--surface);border-radius:var(--rad-xs);border:1px solid var(--border)">
+              <div style="display:flex;align-items:center;gap:8px">
+                <div class="tog tog-sm on" id="tog-g666-eagles" onclick="this.classList.toggle('on')"><div class="tog-k"></div></div>
+                <span style="font-size:13px;color:var(--text)">🦅 Eagles</span>
+              </div>
+              <input class="bet-in" type="number" id="g666-junk-eagle" value="4" min="1" style="width:56px;text-align:center">
+            </div>
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:7px 10px;background:var(--surface);border-radius:var(--rad-xs);border:1px solid var(--border)">
+              <div style="display:flex;align-items:center;gap:8px">
+                <div class="tog tog-sm on" id="tog-g666-partnerpar" onclick="this.classList.toggle('on')"><div class="tog-k"></div></div>
+                <span style="font-size:13px;color:var(--text)">🤝 Partner Par</span>
+              </div>
+              <input class="bet-in" type="number" id="g666-junk-partnerpar" value="3" min="1" style="width:56px;text-align:center">
+            </div>
+          </div>
+          <div class="note" style="margin-top:8px">Junk is tracked team vs team within each segment. Both partners must make par for Partner Par. Points reset each segment with new team pairings.</div>
+        </div>
         <div id="g666-segment-builder"></div>
       </div>
     </div>
@@ -653,7 +813,10 @@ body{font-family:var(--sans);background:var(--bg);color:var(--text);
   <div class="hdr"><div class="hdr-eye">Step 3 of 3</div><h1>Games &amp; Strokes</h1><p>Confirm individual matches and stroke agreements — team games are already active</p></div>
   <div class="steps"><div class="step done"></div><div class="step done"></div><div class="step active"></div></div>
   <div class="scroll body">
-    <div class="info">Toggle off any games you do not have a match for.</div>
+    <div style="margin-bottom:14px;padding:14px 16px;background:var(--gold-dim);border:1.5px solid rgba(200,149,42,0.4);border-radius:var(--rad-s)">
+      <div style="font-size:13px;font-weight:600;color:var(--gold-hi);margin-bottom:4px">⚠ Individual matches only</div>
+      <div style="font-size:12px;color:var(--text-2);line-height:1.6">Each card below is a <strong style="color:var(--text)">1-on-1 side bet</strong> against that player. Toggle <strong style="color:var(--text)">off</strong> any game you do <strong style="color:var(--text)">not</strong> have a match for.<br>Team games you selected are <strong style="color:#7bc44a">already active</strong> — no action needed here.</div>
+    </div>
     <div id="stroke-list"></div>
   </div>
   <div class="bar"><div class="btn-row">
@@ -690,6 +853,7 @@ body{font-family:var(--sans);background:var(--bg);color:var(--text);
     <div style="padding:8px 16px 0" id="vegas-panel"></div>
     <div style="padding:8px 16px 0" id="ninepoint-panel"></div>
     <div style="padding:8px 16px 0" id="game666-panel"></div>
+    <div style="padding:8px 16px 0" id="stableford-panel"></div>
     <div style="padding:8px 16px 0" id="quota-panel"></div>
     <div style="padding:8px 16px 0" id="junk-panel"></div>
     <div style="padding:8px 16px 0" id="press-panel"></div>
@@ -1211,13 +1375,17 @@ const NAV_SCREENS = new Set(['s-home','s-history','s-ledger','s-roster','s-tmt',
 let S = {
   you: {name:'',hdcp:0},
   opps: [],           // [{name,hdcp,type,id}]
-  games: {nassau:false,closeout:false,wolf:false,junk:false,vegas:false,quota:false,ninepoint:false,game666:false},
-  bets: {nassau:{f9:5,b9:5,overall:10,press:5}, closeout:{base:10,press:5}, wolf:{pt:2,bump:false}, junk:{pt:1,team:false,birdie:2,eagle:4}, vegas:{pt:1},
+  games: {nassau:false,closeout:false,wolf:false,junk:false,vegas:false,quota:false,ninepoint:false,game666:false,stableford:false},
+  bets: {nassau:{f9:5,b9:5,overall:10,press:5}, closeout:{base:10,press:5}, wolf:{pt:2,bump:false,blindMult:4,loneMult:3,soloMult:2}, junk:{pt:1,team:false,birdie:2,eagle:4}, vegas:{pt:1,max:2,cap:true},
     quota:{payoutType:'overall', spots:[{place:1,amt:50},{place:2,amt:30},{place:3,amt:20}],
            f9:10, b9:10, total:20, format:'individual', teamSize:2, scoresCount:2,
            pts:{triple:-1,double:0,bogey:1,par:2,birdie:3,eagle:4}},
     ninepoint:{pt:1, shootout:false},
-    game666:{bet:10}},
+    game666:{bet:10},
+    game666Junk:{enabled:false,junkPt:1,cats:{birdies:true,eagles:true,partnerpar:true},pts:{birdie:2,eagle:4,partnerpar:3}},
+    stableford:{pts:{triple:0,double:0,bogey:1,par:2,birdie:3,eagle:5},payoutType:'overall',spots:[{place:1,amt:50},{place:2,amt:30},{place:3,amt:20}],f9:10,b9:10,total:20,format:'individual'}},
+  stablefordPlayers: [],
+  stablefordTeams: [],
   game666Segments: [  // 3 segments, each {A:[id,id], B:[id,id]}
     {A:[],B:[]}, {A:[],B:[]}, {A:[],B:[]}
   ],
@@ -1472,6 +1640,11 @@ function step1to2(){
 // ═══════════════════════════════════════════════════
 //  SETUP — STEP 2: GAMES
 // ═══════════════════════════════════════════════════
+function toggle666Junk(tog){
+  tog.classList.toggle('on');
+  document.getElementById('g666-junk-body').style.display = tog.classList.contains('on')?'block':'none';
+}
+
 function toggleGame(g){
   S.games[g] = !S.games[g];
   document.getElementById('tog-'+g)?.classList.toggle('on', S.games[g]);
@@ -1480,6 +1653,7 @@ function toggleGame(g){
   if(g==='vegas') renderVegasTeamBuilder();
   if(g==='quota'&&S.games.quota){ renderQuotaSpotsBuilder(); renderQuotaTeamBuilder(); }
   if(g==='game666') render666SegmentBuilder();
+  if(g==='stableford'){ renderSFPlayerChecklist(); renderSFSpotsBuilder(); }
 }
 
 function toggleNpShootout(tog){
@@ -1909,7 +2083,7 @@ function wolfOrderMove(idx, dir){
 }
 
 function step2to3(){
-  if(!S.games.nassau&&!S.games.closeout&&!S.games.wolf&&!S.games.junk&&!S.games.vegas&&!S.games.quota&&!S.games.ninepoint&&!S.games.game666){ alert('Select at least one game.'); return; }
+  if(!S.games.nassau&&!S.games.closeout&&!S.games.wolf&&!S.games.junk&&!S.games.vegas&&!S.games.quota&&!S.games.ninepoint&&!S.games.game666&&!S.games.stableford){ alert('Select at least one game.'); return; }
   if(S.games.ninepoint){
     if(S.ninepointPlayers.length!==3){ alert('9 Point requires exactly 3 players selected. You have '+S.ninepointPlayers.length+'.'); return; }
     S.bets.ninepoint.pt=+document.getElementById('np-pt').value||1;
@@ -1917,10 +2091,17 @@ function step2to3(){
   S.bets.nassau={f9:+document.getElementById('n-f9').value||5,b9:+document.getElementById('n-b9').value||5,overall:+document.getElementById('n-18').value||10,press:+document.getElementById('n-press').value||5};
   S.bets.closeout={base:+document.getElementById('c-base').value||10,press:+document.getElementById('c-press').value||5};
   S.bets.wolf.pt=+document.getElementById('w-pt').value||2;
+  S.bets.wolf.blindMult=+document.getElementById('w-blind-mult').value||4;
+  S.bets.wolf.loneMult=+document.getElementById('w-lone-mult').value||3;
+  S.bets.wolf.soloMult=+document.getElementById('w-solo-mult').value||2;
   S.bets.junk.pt=+document.getElementById('j-pt').value||1;
   S.bets.junk.birdie=+document.getElementById('j-birdie').value||2;
   S.bets.junk.eagle=+document.getElementById('j-eagle').value||4;
-  if(S.games.vegas) S.bets.vegas.pt=+document.getElementById('v-pt').value||1;
+  if(S.games.vegas){
+    S.bets.vegas.pt=+document.getElementById('v-pt').value||1;
+    S.bets.vegas.max=+document.getElementById('v-max').value||2;
+    S.bets.vegas.cap=document.getElementById('tog-vegas-cap')?.classList.contains('on')??true;
+  }
   if(S.games.quota){
     const q=S.bets.quota;
     q.pts.triple=+document.getElementById('q-triple').value;
@@ -1936,12 +2117,40 @@ function step2to3(){
     }
     q.teamSize=+document.getElementById('q-team-size').value||2;
   }
+  if(S.games.stableford){
+    const sf=S.bets.stableford;
+    sf.pts.triple=+document.getElementById('sf-triple').value;
+    sf.pts.double=+document.getElementById('sf-double').value;
+    sf.pts.bogey=+document.getElementById('sf-bogey').value;
+    sf.pts.par=+document.getElementById('sf-par').value;
+    sf.pts.birdie=+document.getElementById('sf-birdie').value;
+    sf.pts.eagle=+document.getElementById('sf-eagle').value;
+    sf.buyin=+document.getElementById('sf-buyin')?.value||20;
+    if(sf.payoutType==='nassau'){
+      sf.f9=+document.getElementById('sf-f9').value||10;
+      sf.b9=+document.getElementById('sf-b9').value||10;
+      sf.total=+document.getElementById('sf-total').value||20;
+    }
+    sf.teamSize=+document.getElementById('sf-team-size').value||2;
+  }
   if(S.games.wolf&&S.wolfPlayers.length<4){ alert('Wolf needs 4+ players selected. You have '+S.wolfPlayers.length+'.'); return; }
   if(S.games.game666){
     const total = 1 + S.opps.length;
     if(total!==4){ alert('6,6,6 requires exactly 4 players. You have '+total+'.'); return; }
     S.bets.game666.bet = +document.getElementById('g666-bet').value||10;
     S.bets.game666.press = +document.getElementById('g666-press').value||S.bets.game666.bet;
+    // 666 junk add-on
+    const junkOn = document.getElementById('tog-g666-junk')?.classList.contains('on');
+    S.bets.game666Junk.enabled = !!junkOn;
+    if(junkOn){
+      S.bets.game666Junk.junkPt = +document.getElementById('g666-junk-pt').value||1;
+      S.bets.game666Junk.cats.birdies    = document.getElementById('tog-g666-birdies')?.classList.contains('on');
+      S.bets.game666Junk.cats.eagles     = document.getElementById('tog-g666-eagles')?.classList.contains('on');
+      S.bets.game666Junk.cats.partnerpar = document.getElementById('tog-g666-partnerpar')?.classList.contains('on');
+      S.bets.game666Junk.pts.birdie     = +document.getElementById('g666-junk-birdie').value||2;
+      S.bets.game666Junk.pts.eagle      = +document.getElementById('g666-junk-eagle').value||4;
+      S.bets.game666Junk.pts.partnerpar = +document.getElementById('g666-junk-partnerpar').value||3;
+    }
     // Segment pairings validated at startRound — allow advancing to strokes even if incomplete
   }
   if(S.games.vegas&&S.vegasPlayers.length!==4){ alert('Vegas requires exactly 4 players selected. You have '+S.vegasPlayers.length+'.'); return; }
@@ -1983,7 +2192,7 @@ function renderStrokes(){
 
   // 1v1 stroke cards — shown when any game uses playerStrokes (nassau, closeout, wolf, vegas, 9pt, quota)
   // Hidden when ONLY 6,6,6 is selected since it has its own per-segment stroke system
-  const needsPlayerStrokes = S.games.nassau||S.games.closeout||S.games.wolf||S.games.vegas||S.games.ninepoint||S.games.quota;
+  const needsPlayerStrokes = S.games.nassau||S.games.closeout||S.games.wolf||S.games.vegas||S.games.ninepoint||S.games.quota||S.games.stableford;
   if(needsPlayerStrokes){
     html += S.opps.map((o,i)=>{
     const m = S.matches[i] || {strokes:0, youGet:false, inNassau:false, inCloseout:false};
@@ -2272,6 +2481,7 @@ function showConfirm(){
   }
   if(S.games.wolf) html+=`<div class="sum-row"><span class="muted">Wolf</span><span style="font-weight:600">$${S.bets.wolf.pt}/pt</span></div>`;
   if(S.games.ninepoint) html+=`<div class="sum-row"><span class="muted">9 Point</span><span style="font-weight:600">$${S.bets.ninepoint.pt}/pt${S.bets.ninepoint.shootout?' · 🎯 Shootout':''}</span></div>`;
+  if(S.games.stableford){ const sf=S.bets.stableford; html+=`<div class="sum-row"><span class="muted">Stableford</span><span style="font-weight:600">${sf.payoutType==='nassau'?'1st 9 $'+sf.f9+' / 2nd 9 $'+sf.b9+' / Total $'+sf.total:'Spots payout'} · ${sf.format}</span></div>`; }
   if(S.games.game666) html+=`<div class="sum-row"><span class="muted">6,6,6</span><span style="font-weight:600">$${S.bets.game666.bet}/segment</span></div>`;
   if(S.games.quota){
     const q=S.bets.quota;
@@ -2330,7 +2540,10 @@ function startRound(){
     ninepointPlayers:S.ninepointPlayers.slice(),
     quotaGamePlayers:S.quotaPlayers.slice(),
     game666Segments: JSON.parse(JSON.stringify(S.game666Segments||[])),
+    stablefordPlayers: JSON.parse(JSON.stringify(S.stablefordPlayers||[])),
+    stablefordTeams: JSON.parse(JSON.stringify(S.stablefordTeams||[])),
     game666Strokes:  JSON.parse(JSON.stringify(S.game666Strokes||[{},{},{}])),
+    game666Junk:     JSON.parse(JSON.stringify(S.bets.game666Junk||{enabled:false})),
     vegasBumps:[],
     quotaTeams: JSON.parse(JSON.stringify(S.quotaTeams)),
     npStrokes: JSON.parse(JSON.stringify(S.npStrokes||{})),
@@ -2356,9 +2569,10 @@ function startRound(){
       return map;
     })(),
     scores:Array(18).fill(null).map(()=>{const o={you:''};S.opps.forEach(op=>o[op.id]='');return o;}),
-    wolfHoles:Array(18).fill(null).map(()=>({captainId:null,partnerId:null,isBlind:false,isLone:false,decided:false,captainConfirmed:false})),
+    wolfHoles:Array(18).fill(null).map(()=>({captainId:null,partnerId:null,isBlind:false,isLone:false,isSolo:false,decided:false,captainConfirmed:false})),
     wolfMultiplier:1,   // doubles each bump, carries forward
     wolfBumps:[],       // [{hole, fromMulti, toMulti}] for results log
+    wolfHolePts:{},     // per-hole pt overrides for holes 16-18
     nassauPresses:S.opps.map(()=>({f9p1:null,f9p2:null,f9p3:null,b9p1:null,b9p2:null,b9p3:null})),
     nassauTeamPresses:{f9p1:null,f9p2:null,f9p3:null,b9p1:null,b9p2:null,b9p3:null},
     // junkHoles[h] = {greenie:id|null, proxy:id|null, sandies:[ids], pollies:[ids], greenieSet:bool, proxySet:bool}
@@ -2426,7 +2640,12 @@ function netOpp(raw, strokes, youGet, hcpIdx){
   const bonus=(strokes>0&&!youGet&&hcpIdx<=strokes)?1:0;
   return s-bonus;
 }
+// A hole is confirmed only if the player has advanced past it.
+// The current hole (R.currentHole) has par prefilled but is still being played.
+function isPlayed(h){ return R && h < R.currentHole; }
 function holeWin(yn,on){ if(yn===null||on===null) return null; return yn<on?'W':yn>on?'L':'H'; }
+// holeResult returns null for unconfirmed holes regardless of prefilled score
+function holeResult(h, yn, on){ if(!isPlayed(h)) return null; return holeWin(yn,on); }
 
 // ── TEAM MATCH HELPERS ────────────────────────────
 // Get best net score for a team on a hole
@@ -2454,7 +2673,7 @@ function calcCloseoutTeam(){
   for(let h=0;h<18;h++){
     const bestA = teamBestNet(teams.A,h);
     const bestB = teamBestNet(teams.B,h);
-    const res = holeWin(bestA,bestB); // A=you side, B=opp side
+    const res = holeResult(h, bestA, bestB); // A=you side, B=opp side
     results.push(res);
     if(res===null) break;
     const rem=17-h;
@@ -2494,7 +2713,7 @@ function calcNassauTeam(){
     let clinched=false, clinchedAt=null;
     for(let h=start;h<=end;h++){
       const bestA=teamBestNet(teams.A,h), bestB=teamBestNet(teams.B,h);
-      const r=holeWin(bestA,bestB);
+      const r=holeResult(h, bestA, bestB);
       res.push(r); if(r===null) break;
       const holeD=r==='W'?1:r==='L'?-1:0;
       status+=holeD;
@@ -2522,10 +2741,10 @@ function calcNassauTeam(){
   let ov=0;
   for(let h=0;h<18;h++){
     const bestA=teamBestNet(teams.A,h), bestB=teamBestNet(teams.B,h);
-    const r=holeWin(bestA,bestB); if(r===null) break;
+    const r=holeResult(h, bestA,bestB); if(r===null) break;
     ov+=(r==='W'?1:r==='L'?-1:0)*sign;
   }
-  const allDone=R.scores.every(sc=>typeof sc.you==='number');
+  const allDone=Array.from({length:18},(_,h)=>h).every(h=>isPlayed(h));
   const ovPay=allDone?(ov>0?bet.overall:ov<0?-bet.overall:0):null;
   const total=(front.mainPay||0)+front.pressPays.reduce((a,b)=>a+b,0)+
               (back.mainPay||0)+back.pressPays.reduce((a,b)=>a+b,0)+(ovPay||0);
@@ -2543,7 +2762,7 @@ function calcCloseout(mi){
     const sc=R.scores[h];
     const yn=netS(sc.you,m.strokes,m.youGet,HCP[holeIdx(h)]);
     const on=netOpp(sc[o.id],m.strokes,m.youGet,HCP[holeIdx(h)]);
-    const res=holeWin(yn,on);
+    const res=holeResult(h, yn,on);
     results.push(res);
     if(res===null) break;
     const rem=17-h;
@@ -2580,7 +2799,7 @@ function calcNassau(mi){
       const sc=R.scores[h];
       const yn=netS(sc.you,m.strokes,m.youGet,HCP[holeIdx(h)]);
       const on=netOpp(sc[o.id],m.strokes,m.youGet,HCP[holeIdx(h)]);
-      const r=holeWin(yn,on);
+      const r=holeResult(h, yn,on);
       res.push(r);
       if(r===null) break; // stop at first unplayed hole — scores are sequential
       lastScoredH=h;
@@ -2614,10 +2833,10 @@ function calcNassau(mi){
     const sc=R.scores[h];
     const yn=netS(sc.you,m.strokes,m.youGet,HCP[holeIdx(h)]);
     const on=netOpp(sc[o.id],m.strokes,m.youGet,HCP[holeIdx(h)]);
-    const r=holeWin(yn,on); if(r===null) break;
+    const r=holeResult(h, yn,on); if(r===null) break;
     ov+=r==='W'?1:r==='L'?-1:0;
   }
-  const allDone=R.scores.every(sc=>sc.you!==''&&sc[o.id]!=='');
+  const allDone=Array.from({length:18},(_,h)=>h).every(h=>isPlayed(h));
   const ovPay=allDone?(ov>0?bet.overall:ov<0?-bet.overall:0):null;
   const total=(front.mainPay||0)+front.pressPays.reduce((a,b)=>a+b,0)+
               (back.mainPay||0)+back.pressPays.reduce((a,b)=>a+b,0)+(ovPay||0);
@@ -2641,10 +2860,11 @@ function calcWolfPoints(){
   players.forEach(p=>pts[p.id]=0);
   let carry=1;
   const log=[];
-  // Process holes 0 through currentHole (inclusive — current hole scores are entered)
-  const holesPlayed = R.currentHole + 1;
+  const basePt = R.bets.wolf?.pt || 2;
+  const holesPlayed = R.currentHole;
 
-  for(let h=0;h<holesPlayed;h++){
+  for(let h=0;h<18;h++){
+    if(!isPlayed(h)) break; // stop at first unconfirmed hole
     const wh=R.wolfHoles[h];
     const sc=R.scores[h];
     if(!wh.decided){ carry++; log.push({h,result:'tie',pot:carry-1}); continue; }
@@ -2653,7 +2873,7 @@ function calcWolfPoints(){
     if(Object.keys(scoreMap).length<players.length){ carry++; log.push({h,result:'missing',pot:carry-1}); continue; }
 
     let wolfTeam=[], otherTeam=[];
-    if(wh.isBlind||wh.isLone){ wolfTeam=[wh.captainId]; otherTeam=players.map(p=>p.id).filter(id=>id!==wh.captainId); }
+    if(wh.isBlind||wh.isLone||wh.isSolo){ wolfTeam=[wh.captainId]; otherTeam=players.map(p=>p.id).filter(id=>id!==wh.captainId); }
     else if(wh.partnerId){ wolfTeam=[wh.captainId,wh.partnerId]; otherTeam=players.map(p=>p.id).filter(id=>!wolfTeam.includes(id)); }
     else { carry++; log.push({h,result:'no-pick',pot:carry-1}); continue; }
 
@@ -2663,26 +2883,37 @@ function calcWolfPoints(){
 
     const wolfWon=wb<ob;
     const winner=wolfWon?wolfTeam:otherTeam;
-    const loser=wolfWon?otherTeam:wolfTeam;
 
+    const blindMult = R.bets.wolf?.blindMult || 4;
+    const loneMult  = R.bets.wolf?.loneMult  || 3;
+    const soloMult  = R.bets.wolf?.soloMult  || 2;
     let mult=1;
-    if(wolfTeam.length===1) mult*=(wh.isBlind?3:2);
+    if(wolfTeam.length===1){
+      if(wh.isBlind) mult = blindMult;
+      else if(wh.isLone) mult = loneMult;
+      else mult = soloMult;
+    }
     const winBest=Math.min(...winner.map(id=>scoreMap[id]));
-    if(winBest<=PAR[holeIdx(h)]-1) mult*=2; // birdie or better
+    if(winBest<=PAR[holeIdx(h)]-1) mult*=2; // birdie or better doubles
 
+    // Per-hole pt override for holes 16-18
+    const holePtBase = R.wolfHolePts?.[h] ?? basePt;
     const holePts=carry*mult;
     winner.forEach(id=>{ if(pts[id]!==undefined) pts[id]+=holePts; });
-    log.push({h,result:wolfWon?'wolf-win':'wolf-loss',pot:carry,mult,holePts,wolfTeam,winner});
+    log.push({h,result:wolfWon?'wolf-win':'wolf-loss',pot:carry,mult,holePts,holePtBase,wolfTeam,winner});
     carry=1;
   }
-  return{pts,players,carry,log};
+  return{pts,players,carry,log,basePt};
 }
 
 function calcWolfPayouts(wolfResult){
   if(!wolfResult) return null;
-  const{pts,players,carry}=wolfResult;
-  const perPt=(R.bets.wolf.pt||1) * (R.wolfMultiplier||1);
-  // Sort highest points first (winner at top)
+  const{pts,players,carry,log}=wolfResult;
+  const globalMulti = R.wolfMultiplier||1;
+  // Points already account for carry/mult — dollar value = pts × basePt × bumpMultiplier
+  // But for per-hole overrides: each hole's $ = holePts × holePtBase × bumpMulti
+  // We track this in the log. For simple display, use basePt * globalMulti as rate.
+  const perPt=(R.bets.wolf?.pt||2) * globalMulti;
   const sorted=[...players].sort((a,b)=>pts[b.id]-pts[a.id]);
   const debts={};
   players.forEach(p=>debts[p.id]={});
@@ -2697,7 +2928,7 @@ function calcWolfPayouts(wolfResult){
     if(p.id==='you') return;
     myNet+=(debts[p.id]?.['you']||0)-(debts['you']?.[p.id]||0);
   });
-  return{pts,sorted,debts,myNet,perPt,players,carry,multiplier:R.wolfMultiplier||1};
+  return{pts,sorted,debts,myNet,perPt,players,carry,multiplier:globalMulti};
 }
 
 // ── STATUS TEXT ───────────────────────────────────
@@ -2716,6 +2947,7 @@ function initScorecard(){
   renderVegasPanel();
   renderNinepointPanel();
   render666Panel();
+  renderStablefordPanel();
   renderQuotaPanel();
   renderJunkPanel();
   renderPressPanel();
@@ -2785,6 +3017,7 @@ function changeScore(pid,delta){
   renderVegasPanel();
   renderNinepointPanel();
   render666Panel();
+  renderStablefordPanel();
   renderQuotaPanel();
   renderJunkPanel();
   renderStatusPanel();
@@ -2882,8 +3115,9 @@ function renderWolfPanel(){
         ${usedNames.length&&!isLast3?`<div style="color:var(--gold-hi);margin-top:3px">⚠ ${captain?.name} already used: ${usedNames.join(', ')}</div>`:''}
       </div>
       <div style="display:flex;gap:6px;margin-bottom:8px">
-        <button class="wolf-action-btn" onclick="wolfBlind(${h})" style="background:var(--gold-p);border-color:var(--gold-hi);color:var(--gold-hi)">🎲 Blind (3×)<br><span style="font-size:10px;font-weight:400">before tee shots</span></button>
-        <button class="wolf-action-btn" onclick="wolfLone(${h})" style="background:var(--red-p);border-color:#e5b0aa;color:var(--red)">🐺 Lone (2×)<br><span style="font-size:10px;font-weight:400">after seeing shots</span></button>
+        <button class="wolf-action-btn" data-wolf-action="blind" data-hole="${h}" style="background:var(--gold-dim);border-color:var(--gold-hi);color:var(--gold-hi)">🎲 Blind ${R.bets.wolf?.blindMult||4}×<br><span style="font-size:9px;font-weight:400">before anyone hits</span></button>
+        <button class="wolf-action-btn" data-wolf-action="lone" data-hole="${h}" style="background:rgba(139,92,246,0.1);border-color:#a78bfa;color:#a78bfa">🏌️ Lone ${R.bets.wolf?.loneMult||3}×<br><span style="font-size:9px;font-weight:400">wolf hits first, likes it</span></button>
+        <button class="wolf-action-btn" data-wolf-action="solo" data-hole="${h}" style="background:var(--red-p);border-color:#e5b0aa;color:var(--red)">🐺 Solo ${R.bets.wolf?.soloMult||2}×<br><span style="font-size:9px;font-weight:400">all hit, goes alone</span></button>
       </div>
       <div style="font-size:10px;font-weight:600;color:var(--text-3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:5px">Pick partner</div>
       <div style="display:flex;flex-wrap:wrap;gap:6px" id="wolf-pick-btns-${h}">
@@ -2896,8 +3130,10 @@ function renderWolfPanel(){
       </div>`;
   } else {
     let badge='';
-    if(wh.isBlind) badge=`<span style="background:var(--gold-p);color:var(--gold-hi);padding:3px 10px;border-radius:20px;font-size:12px;font-weight:600">🎲 Blind Wolf 3×</span>`;
-    else if(wh.isLone) badge=`<span style="background:var(--red-p);color:var(--red);padding:3px 10px;border-radius:20px;font-size:12px;font-weight:600">🐺 Lone Wolf 2×</span>`;
+    const bMult=R.bets.wolf?.blindMult||4, lMult=R.bets.wolf?.loneMult||3, sMult=R.bets.wolf?.soloMult||2;
+    if(wh.isBlind) badge=`<span style="background:var(--gold-dim);color:var(--gold-hi);padding:3px 10px;border-radius:20px;font-size:12px;font-weight:600">🎲 Blind Wolf ${bMult}×</span>`;
+    else if(wh.isLone) badge=`<span style="background:rgba(139,92,246,0.1);color:#a78bfa;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:600">🏌️ Lone Wolf ${lMult}×</span>`;
+    else if(wh.isSolo) badge=`<span style="background:var(--red-p);color:var(--red);padding:3px 10px;border-radius:20px;font-size:12px;font-weight:600">🐺 Solo Wolf ${sMult}×</span>`;
     else { const partner=wp.find(p=>p.id==wh.partnerId); badge=`<span style="background:var(--green-dim);color:#7bc44a;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:600">🤝 With ${partner?.name||'?'}</span>`; }
     const resetLabel = isLast3 ? 'Change Captain' : 'Change';
     decision=`<div style="display:flex;align-items:center;gap:8px">${badge}<button onclick="${isLast3?`resetWolfCaptain(${h})`:`wolfReset(${h})`}" style="font-size:12px;color:var(--text-3);background:none;border:none;cursor:pointer;text-decoration:underline;font-family:'DM Sans',sans-serif">${resetLabel}</button></div>`;
@@ -2909,10 +3145,10 @@ function renderWolfPanel(){
     const wr2pts = wr2 ? wr2.pts : {};
     const youPts = wr2pts['you'] || 0;
     const maxOtherPts = Math.max(...wp.filter(p=>p.id!=='you').map(p=>wr2pts[p.id]||0));
-    const canBump = youPts <= maxOtherPts; // behind or tied → can bump
+    const canBump = youPts <= maxOtherPts;
     const multi = R.wolfMultiplier || 1;
     if(canBump){
-      bumpBtn = `<button onclick="wolfBump(${h})"
+      bumpBtn = `<button data-wolf-bump="${h}"
         style="width:100%;height:38px;border-radius:var(--rad-s);border:1.5px solid var(--red);
         background:var(--red-p);color:var(--red);font-size:13px;font-weight:600;cursor:pointer;
         font-family:'DM Sans',sans-serif;margin-bottom:8px">
@@ -2921,11 +3157,25 @@ function renderWolfPanel(){
     }
   }
 
-  // Current pot and multiplier display
+  // Holes 16-18: optional per-hole point value adjustment
+  let ptAdjuster = '';
+  if(isLast3 && wh.captainConfirmed){
+    const curPt = R.wolfHolePts?.[h] ?? (R.bets.wolf?.pt || 2);
+    ptAdjuster = `<div style="display:flex;align-items:center;gap:8px;padding:8px 0;border-top:1px solid var(--border);margin-top:6px">
+      <span style="font-size:12px;color:var(--text-2);flex:1">Adjust pts for this hole <span style="color:var(--text-3);font-size:11px">(optional)</span></span>
+      <div style="display:flex;align-items:center;gap:6px">
+        <button data-wolf-pt-adj="${h}" data-dir="-1" style="width:28px;height:28px;border-radius:50%;border:1px solid var(--border-hi);background:var(--surface);color:var(--text);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center">−</button>
+        <span id="wolf-pt-val-${h}" style="font-size:15px;font-weight:600;color:var(--gold-hi);min-width:28px;text-align:center">${curPt}</span>
+        <button data-wolf-pt-adj="${h}" data-dir="1" style="width:28px;height:28px;border-radius:50%;border:1px solid var(--border-hi);background:var(--surface);color:var(--text);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center">+</button>
+      </div>
+    </div>`;
+  }
+
   const currentPot = wr2 ? wr2.carry : 1;
+  const ptVal = R.wolfHolePts?.[h] ?? (R.bets.wolf?.pt || 2);
   const potDisplay = currentPot > 1
-    ? `<span style="background:var(--gold-p);color:var(--gold-hi);padding:2px 8px;border-radius:20px;font-size:11px;font-weight:600">${currentPot}pt pot</span>`
-    : `<span style="background:var(--surface);color:var(--text-3);padding:2px 8px;border-radius:20px;font-size:11px">1pt</span>`;
+    ? `<span style="background:var(--gold-dim);color:var(--gold-hi);padding:2px 8px;border-radius:20px;font-size:11px;font-weight:600">${currentPot}pt carry · $${ptVal}/pt</span>`
+    : `<span style="background:var(--surface);color:var(--text-3);padding:2px 8px;border-radius:20px;font-size:11px">$${ptVal}/pt</span>`;
 
   const multi = R.wolfMultiplier || 1;
   const multiDisplay = multi > 1
@@ -2944,6 +3194,7 @@ function renderWolfPanel(){
     <div style="height:1px;background:var(--r1);margin-bottom:10px"></div>
     ${bumpBtn}
     ${decision}
+    ${ptAdjuster}
   </div>`;
 
   // Wire captain select buttons (holes 16-18)
@@ -2957,6 +3208,34 @@ function renderWolfPanel(){
         R.wolfHoles[holeIdx].captainId = pid;
         R.wolfHoles[holeIdx].captainConfirmed = false;
         saveR(); renderWolfPanel();
+      });
+    });
+    // Wire Blind / Lone / Solo wolf action buttons
+    el.querySelectorAll('[data-wolf-action]').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        const holeN = parseInt(btn.dataset.hole);
+        const action = btn.dataset.wolfAction;
+        if(action==='blind') wolfBlind(holeN);
+        else if(action==='lone') wolfLone(holeN);
+        else if(action==='solo') wolfSolo(holeN);
+      });
+    });
+    // Wire bump button
+    el.querySelectorAll('[data-wolf-bump]').forEach(btn=>{
+      btn.addEventListener('click', ()=>{ wolfBump(parseInt(btn.dataset.wolfBump)); });
+    });
+    // Wire per-hole pt adjuster buttons (holes 16-18)
+    el.querySelectorAll('[data-wolf-pt-adj]').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        const holeN = parseInt(btn.dataset.wolfPtAdj);
+        const dir = parseInt(btn.dataset.dir);
+        if(!R.wolfHolePts) R.wolfHolePts={};
+        const cur = R.wolfHolePts[holeN] ?? (R.bets.wolf?.pt||2);
+        const next = Math.max(1, cur + dir);
+        R.wolfHolePts[holeN] = next;
+        const valEl = document.getElementById('wolf-pt-val-'+holeN);
+        if(valEl) valEl.textContent = next;
+        saveR();
       });
     });
     // Wire partner pick buttons
@@ -2997,9 +3276,10 @@ function resetWolfCaptain(h){
   saveR(); renderWolfPanel(); renderStatusPanel();
 }
 
-function wolfBlind(h){ R.wolfHoles[h]={...R.wolfHoles[h],isBlind:true,isLone:false,partnerId:null,decided:true}; saveR(); renderWolfPanel(); renderStatusPanel(); }
-function wolfLone(h){ R.wolfHoles[h]={...R.wolfHoles[h],isBlind:false,isLone:true,partnerId:null,decided:true}; saveR(); renderWolfPanel(); renderStatusPanel(); }
-function wolfPick(h,pid){ R.wolfHoles[h]={...R.wolfHoles[h],isBlind:false,isLone:false,partnerId:pid,decided:true}; saveR(); renderWolfPanel(); renderStatusPanel(); }
+function wolfBlind(h){ R.wolfHoles[h]={...R.wolfHoles[h],isBlind:true,isLone:false,isSolo:false,partnerId:null,decided:true}; saveR(); renderWolfPanel(); renderStatusPanel(); }
+function wolfLone(h){ R.wolfHoles[h]={...R.wolfHoles[h],isBlind:false,isLone:true,isSolo:false,partnerId:null,decided:true}; saveR(); renderWolfPanel(); renderStatusPanel(); }
+function wolfSolo(h){ R.wolfHoles[h]={...R.wolfHoles[h],isBlind:false,isLone:false,isSolo:true,partnerId:null,decided:true}; saveR(); renderWolfPanel(); renderStatusPanel(); }
+function wolfPick(h,pid){ R.wolfHoles[h]={...R.wolfHoles[h],isBlind:false,isLone:false,isSolo:false,partnerId:pid,decided:true}; saveR(); renderWolfPanel(); renderStatusPanel(); }
 function wolfReset(h){ R.wolfHoles[h].decided=false; saveR(); renderWolfPanel(); renderStatusPanel(); }
 
 // Press panel
@@ -3012,11 +3292,9 @@ function renderPressPanel(){
   const nassauOpps=R.opps.filter((_,i)=>R.matches[i]?.inNassau);
   if(!nassauOpps.length){el.innerHTML='';return;}
 
-  // Scores are prefilled with par immediately on render, so check for numeric values
-  // A hole is "confirmed" once the player has advanced past it OR it's the current hole with numeric scores
-  const sc=R.scores[h];
-  const allScored = typeof sc.you === 'number' &&
-    R.opps.filter((_,i)=>R.matches[i]?.inNassau).every(o=>typeof sc[o.id]==='number');
+  // Press is available when at least one hole has been confirmed (played past)
+  // Since isPlayed(h) = h < R.currentHole, we just need currentHole > 0
+  const allScored = R.currentHole > 0;
 
   // Press starts scoring from next hole (h+1)
   const nextPlayPos = h + 1;
@@ -3135,10 +3413,15 @@ function vegasNetScore(pid, h){
   const raw = pid==='you'||pid=='you' ? sc.you : sc[pid];
   const gross = parseInt(raw);
   if(isNaN(gross)) return null;
-  // Use agreed stroke count from the strokes page (0 = no strokes agreed)
   const strokes = R.playerStrokes ? (R.playerStrokes[pid] ?? R.playerStrokes[String(pid)] ?? 0) : 0;
   const strokeBonus = (strokes > 0 && HCP[holeIdx(h)] <= strokes) ? 1 : 0;
-  return gross - strokeBonus;
+  let net = gross - strokeBonus;
+  // Apply max score cap (par + max) if enabled
+  if(R.bets.vegas?.cap !== false){
+    const maxScore = PAR[holeIdx(h)] + (R.bets.vegas?.max ?? 2);
+    net = Math.min(net, maxScore);
+  }
+  return net;
 }
 
 function vegasCombo(netA, netB, par){
@@ -3153,90 +3436,76 @@ function calcVegas(){
   const teams = R.vegasTeams || {A:[],B:[]};
   if(teams.A.length<2||teams.B.length<2) return null;
 
-  const perPt = R.bets.vegas?.pt || 1;
+  const basePt = R.bets.vegas?.pt || 1;
   const bumps = R.vegasBumps || [];
 
-  // Get current $ rate at a given hole (bumps double the rate)
-  function rateAtHole(h){
-    let rate = perPt;
-    bumps.forEach(b=>{ if(b.hole<=h) rate=b.newRate; });
-    return rate;
+  // Get bump multiplier active at a given hole
+  function bumpMultAtHole(h){
+    let mult = 1;
+    bumps.forEach(b=>{ if(b.hole<=h) mult=b.mult; });
+    return mult;
   }
 
   const holeLog = [];
-  let cumPtsA = 0, cumPtsB = 0;
-  const holesPlayed = R.currentHole + 1;
+  let rawPtsA = 0, rawPtsB = 0;   // raw point differentials (pre-bump)
+  let dollarA = 0, dollarB = 0;   // actual dollar totals
+  const holesPlayed = R.currentHole;
 
   for(let h=0;h<holesPlayed;h++){
     const par = PAR[holeIdx(h)];
-    const sc = R.scores[h];
-
-    // Net scores for each player
     const [a1,a2] = teams.A.map(pid=>vegasNetScore(pid,h));
     const [b1,b2] = teams.B.map(pid=>vegasNetScore(pid,h));
     if(a1===null||a2===null||b1===null||b2===null){
       holeLog.push({h, skip:true}); continue;
     }
 
-    // Check for birdie or better on each team (using net scores)
     const aBirdie = Math.min(a1,a2) <= par-1;
     const bBirdie = Math.min(b1,b2) <= par-1;
 
-    // Build combo numbers
     let comboA = vegasCombo(a1,a2,par);
     let comboB = vegasCombo(b1,b2,par);
 
-    // Birdie flips opponent's number
-    // Both birdie → both flip → cancel out (no flip)
     if(aBirdie && !bBirdie){
-      // Team A birdied → flip Team B's combo
       const bLo = comboB % 10, bHi = Math.floor(comboB/10);
       comboB = bLo*10 + bHi;
     } else if(bBirdie && !aBirdie){
-      // Team B birdied → flip Team A's combo
       const aLo = comboA % 10, aHi = Math.floor(comboA/10);
       comboA = aLo*10 + aHi;
     }
-    // Both birdie → no flip (cancel)
 
     const diff = Math.abs(comboA - comboB);
-    const rate = rateAtHole(h);
+    const bumpMult = bumpMultAtHole(h);
+    const dollarRate = basePt * bumpMult;
 
     if(comboA < comboB){
-      cumPtsA += diff;
-      holeLog.push({h, comboA, comboB, winner:'A', diff, aBirdie, bBirdie, flipped:aBirdie&&!bBirdie?'B':bBirdie&&!aBirdie?'A':null, rate});
+      rawPtsA += diff;
+      dollarA += diff * dollarRate;
+      holeLog.push({h,comboA,comboB,winner:'A',diff,rawPts:diff,bumpMult,dollarRate,aBirdie,bBirdie,flipped:aBirdie&&!bBirdie?'B':bBirdie&&!aBirdie?'A':null});
     } else if(comboB < comboA){
-      cumPtsB += diff;
-      holeLog.push({h, comboA, comboB, winner:'B', diff, aBirdie, bBirdie, flipped:aBirdie&&!bBirdie?'B':bBirdie&&!aBirdie?'A':null, rate});
+      rawPtsB += diff;
+      dollarB += diff * dollarRate;
+      holeLog.push({h,comboA,comboB,winner:'B',diff,rawPts:diff,bumpMult,dollarRate,aBirdie,bBirdie,flipped:aBirdie&&!bBirdie?'B':bBirdie&&!aBirdie?'A':null});
     } else {
-      holeLog.push({h, comboA, comboB, winner:'tie', diff:0, aBirdie, bBirdie, rate});
+      holeLog.push({h,comboA,comboB,winner:'tie',diff:0,bumpMult,dollarRate,aBirdie,bBirdie});
     }
   }
 
-  // Payout: point difference × $ rate at each hole
-  // Accumulate dollar amounts using the rate active at each hole
-  let dollarA=0, dollarB=0;
-  holeLog.forEach(e=>{
-    if(e.skip||e.winner==='tie') return;
-    const dollars = e.diff * e.rate;
-    if(e.winner==='A') dollarA+=dollars;
-    else dollarB+=dollars;
-  });
-
   const youOnA = teams.A.some(id=>id==='you'||id=='you');
   const myDollars = youOnA ? dollarA-dollarB : dollarB-dollarA;
-  const currentRate = rateAtHole(R.currentHole);
+  const currentBumpMult = bumpMultAtHole(R.currentHole);
+  const currentRate = basePt * currentBumpMult;
 
-  return {holeLog, cumPtsA, cumPtsB, dollarA, dollarB, myDollars,
-          teams, perPt, currentRate, bumps, youOnA};
+  return {holeLog, rawPtsA, rawPtsB, cumPtsA:rawPtsA, cumPtsB:rawPtsB,
+          dollarA, dollarB, myDollars, teams, basePt, currentRate, currentBumpMult,
+          bumps, youOnA};
 }
 
 function callVegasBump(h){
   if(!R.vegasBumps) R.vegasBumps=[];
   const vr = calcVegas();
   if(!vr) return;
-  const newRate = vr.currentRate * 2;
-  R.vegasBumps.push({hole:h, newRate});
+  const newMult = (vr.currentBumpMult||1) * 2;
+  R.vegasBumps.push({hole:h, mult:newMult});
   saveR(); renderVegasPanel(); renderStatusPanel();
 }
 
@@ -3344,7 +3613,7 @@ function calcQuota(){
   const players = quotaPlayers();
   const q = R.bets.quota;
   const pts = q.pts;
-  const holesPlayed = R.currentHole + 1;
+  const holesPlayed = R.currentHole; // only holes BEFORE currentHole are confirmed
 
   function playerEntry(p){
     const quota = 36 - p.hdcp;
@@ -3519,13 +3788,252 @@ function npHolePoints(nets, shootout){
   return pts;
 }
 
+// ═══════════════════════════════════════════════════
+//  STABLEFORD ENGINE
+// ═══════════════════════════════════════════════════
+function stablefordPlayers(){
+  if(!R) return [];
+  const ids = R.stablefordPlayers||[];
+  if(!ids.length) return [{id:'you',name:R.you.name,hdcp:R.you.hdcp},...R.opps.map(o=>({id:o.id,name:o.name,hdcp:o.hdcp}))];
+  const all = [{id:'you',name:R.you.name,hdcp:R.you.hdcp},...R.opps.map(o=>({id:o.id,name:o.name,hdcp:o.hdcp}))];
+  return all.filter(p=>ids.some(id=>id==p.id||id===p.id));
+}
+
+function stablefordPts(gross, par, pts){
+  const diff = gross - par;
+  if(diff <= -2) return pts.eagle;
+  if(diff === -1) return pts.birdie;
+  if(diff === 0)  return pts.par;
+  if(diff === 1)  return pts.bogey;
+  if(diff === 2)  return pts.double;
+  return pts.triple;
+}
+
+function calcStableford(){
+  if(!R.games.stableford) return null;
+  const players = stablefordPlayers();
+  const sf = R.bets.stableford;
+  const pts = sf.pts;
+  const holesPlayed = R.currentHole;
+
+  function playerEntry(p){
+    let ptsF9=0, ptsB9=0;
+    for(let h=0; h<Math.min(holesPlayed,18); h++){
+      const sc = R.scores[h];
+      const raw = p.id==='you'||p.id=='you' ? sc.you : sc[p.id];
+      const gross = parseInt(raw);
+      if(isNaN(gross)) continue;
+      // Apply strokes from playerStrokes map
+      const strokes = R.playerStrokes?.[p.id] || 0;
+      const bonus = strokes>0 && HCP[holeIdx(h)]<=strokes ? 1 : 0;
+      const net = gross - bonus;
+      const holePts = stablefordPts(net, PAR[holeIdx(h)], pts);
+      if(h < 9) ptsF9 += holePts;
+      else ptsB9 += holePts;
+    }
+    return {id:p.id, name:p.name, hdcp:p.hdcp, ptsF9, ptsB9, ptsTotal:ptsF9+ptsB9};
+  }
+
+  let entries;
+  if(sf.format==='team' && R.stablefordTeams && R.stablefordTeams.length){
+    entries = R.stablefordTeams.map((team,ti)=>{
+      const members = team.playerIds.map(id=>players.find(p=>p.id==id)).filter(Boolean);
+      if(!members.length) return null;
+      let teamF9=0, teamB9=0;
+      members.forEach(p=>{ const e=playerEntry(p); teamF9+=e.ptsF9; teamB9+=e.ptsB9; });
+      const hasYou = members.some(p=>p.id==='you'||p.id=='you');
+      return {id:hasYou?'you':team.playerIds[0], name:team.name||members.map(p=>p.name).join(' & '),
+              ptsF9:teamF9, ptsB9:teamB9, ptsTotal:teamF9+teamB9, isTeam:true};
+    }).filter(Boolean);
+  } else {
+    entries = players.map(playerEntry);
+  }
+
+  const h = R.currentHole;
+  const sortKey = h < 9 ? 'ptsF9' : 'ptsTotal';
+  const sorted = [...entries].sort((a,b)=>b[sortKey]-a[sortKey]);
+  return {entries, sorted, pts, sf, holesPlayed};
+}
+
+function renderStablefordPanel(){
+  const el = document.getElementById('stableford-panel');
+  if(!R||!R.games.stableford){if(el)el.innerHTML='';return;}
+  if(!el) return;
+  const sr = calcStableford();
+  if(!sr){el.innerHTML='';return;}
+
+  const h = R.currentHole;
+  const phase = h < 9 ? '1st 9' : '2nd 9';
+  const you = sr.entries.find(e=>e.id==='you'||e.id=='you');
+  if(!you){el.innerHTML='';return;}
+
+  const fmtPts = n => n===0?'0':n>0?`+${n}`:`${n}`;
+  const youPts = h < 9 ? you.ptsF9 : you.ptsTotal;
+  const youRank = sr.sorted.findIndex(e=>e.id==='you'||e.id=='you')+1;
+  const ptCol = youPts>0?'var(--g2)':youPts<0?'var(--red)':'var(--text-3)';
+
+  el.innerHTML=`<div class="score-card" style="border:1px solid rgba(77,138,40,0.4)">
+    <div class="score-hdr" style="display:flex;align-items:center;justify-content:space-between">
+      <span>⭐ Stableford · ${phase}</span>
+      <span style="font-family:var(--serif);font-size:14px;color:${ptCol}">${fmtPts(youPts)} pts</span>
+    </div>
+    <div style="padding:8px 14px">
+      <div style="display:flex;gap:6px;flex-wrap:wrap">
+        ${sr.sorted.map((e,i)=>{
+          const ePts = h < 9 ? e.ptsF9 : e.ptsTotal;
+          const isYou = e.id==='you'||e.id=='you';
+          const bg = i===0?'var(--green-dim)':'var(--surface)';
+          const col = i===0?'#7bc44a':'var(--text-3)';
+          return `<div style="padding:3px 9px;border-radius:6px;background:${bg};font-size:12px;font-weight:${isYou?'600':'400'};color:${col}">${e.name} ${fmtPts(ePts)}</div>`;
+        }).join('')}
+      </div>
+    </div>
+  </div>`;
+}
+
+// Setup UI functions for Stableford
+function setSFPayout(type){
+  S.bets.stableford.payoutType = type;
+  document.getElementById('sf-payout-overall').style.display = type==='overall'?'block':'none';
+  document.getElementById('sf-payout-nassau').style.display = type==='nassau'?'block':'none';
+  const ob=document.getElementById('sfp-overall'), nb=document.getElementById('sfp-nassau');
+  ob.style.background=type==='overall'?'var(--green)':'var(--card)'; ob.style.color=type==='overall'?'#fff':'var(--text-2)'; ob.style.borderColor=type==='overall'?'rgba(77,138,40,0.4)':'var(--border-hi)';
+  nb.style.background=type==='nassau'?'var(--green)':'var(--card)'; nb.style.color=type==='nassau'?'#fff':'var(--text-2)'; nb.style.borderColor=type==='nassau'?'rgba(77,138,40,0.4)':'var(--border-hi)';
+}
+function setSFFormat(fmt){
+  S.bets.stableford.format = fmt;
+  document.getElementById('sf-team-options').style.display = fmt==='team'?'block':'none';
+  const ib=document.getElementById('sf-individual'), tb=document.getElementById('sf-team');
+  ib.style.background=fmt==='individual'?'var(--green)':'var(--card)'; ib.style.color=fmt==='individual'?'#fff':'var(--text-2)'; ib.style.borderColor=fmt==='individual'?'rgba(77,138,40,0.4)':'var(--border-hi)';
+  tb.style.background=fmt==='team'?'var(--green)':'var(--card)'; tb.style.color=fmt==='team'?'#fff':'var(--text-2)'; tb.style.borderColor=fmt==='team'?'rgba(77,138,40,0.4)':'var(--border-hi)';
+  if(fmt==='team') renderSFTeamBuilder();
+}
+function renderSFSpotsBuilder(){
+  const n=+document.getElementById('sf-spots')?.value||3;
+  const buyin=+document.getElementById('sf-buyin')?.value||20;
+  if(!S.bets.stableford.spots||S.bets.stableford.spots.length!==n){
+    // Default % splits: 60/30/10 for 3, 50/30/20 for 2, 50/25/15/10 for 4+
+    const defaults=[[100],[60,40],[60,30,10],[50,25,15,10],[45,25,15,10,5],[40,25,15,10,5,5]];
+    const pcts=defaults[n-1]||Array(n).fill(Math.floor(100/n));
+    S.bets.stableford.spots=pcts.map((p,i)=>({place:i+1,pct:p}));
+  }
+  S.bets.stableford.buyin=buyin;
+  const el=document.getElementById('sf-spots-rows'); if(!el) return;
+  el.innerHTML=S.bets.stableford.spots.map((s,i)=>`
+    <div style="display:flex;gap:8px;align-items:center;margin-bottom:5px">
+      <label style="font-size:13px;color:var(--text-3);width:36px">${['1st','2nd','3rd','4th','5th','6th'][i]}</label>
+      <input class="bet-in" type="number" value="${s.pct}" min="0" max="100" style="flex:1;text-align:center"
+        onchange="S.bets.stableford.spots[${i}].pct=+this.value;updateSFPotPreview()">
+      <span style="font-size:13px;color:var(--text-3)">%</span>
+    </div>`).join('');
+  updateSFPotPreview();
+}
+
+function updateSFPotPreview(){
+  const el=document.getElementById('sf-pot-preview'); if(!el) return;
+  const buyin=S.bets.stableford.buyin||20;
+  const spots=S.bets.stableford.spots||[];
+  const totalPct=spots.reduce((a,s)=>a+(s.pct||0),0);
+  const players=(S.stablefordPlayers||[]).length||2;
+  const pot=buyin*players;
+  const pctColor=totalPct===100?'#7bc44a':'var(--red)';
+  el.innerHTML=`Total pot: $${pot} (${players} players × $${buyin}) · <span style="color:${pctColor}">% total: ${totalPct}%${totalPct!==100?' ⚠ should equal 100':' ✓'}</span>`;
+}
+function renderSFTeamBuilder(){
+  const size = +document.getElementById('sf-team-size').value||2;
+  const players = [{id:'you',name:S.you.name||'You'},...S.opps.map(o=>({id:o.id,name:o.name}))];
+  if(!S.stablefordTeams||!S.stablefordTeams.length){
+    const numTeams = Math.ceil(players.length/size);
+    S.stablefordTeams = Array.from({length:numTeams},(_,i)=>({name:`Team ${i+1}`,playerIds:[]}));
+  }
+  const el=document.getElementById('sf-team-builder'); if(!el) return;
+  el.innerHTML = S.stablefordTeams.map((team,ti)=>`
+    <div style="margin-bottom:10px;padding:10px;background:var(--surface);border-radius:var(--rad-s);border:1px solid var(--border)">
+      <div style="font-size:12px;font-weight:600;color:var(--text);margin-bottom:6px">Team ${ti+1}</div>
+      ${players.map(p=>{
+        const inTeam=team.playerIds.some(id=>id==p.id);
+        return `<label style="display:flex;align-items:center;gap:8px;padding:3px 0;cursor:pointer">
+          <input type="checkbox" ${inTeam?'checked':''} style="width:16px;height:16px;accent-color:var(--green)"
+            onchange="toggleSFTeamPlayer(${ti},'${p.id}',this.checked)">
+          <span style="font-size:13px;color:var(--text)">${p.name}</span>
+        </label>`;
+      }).join('')}
+    </div>`).join('');
+}
+function toggleSFTeamPlayer(ti, pid, checked){
+  if(!S.stablefordTeams) return;
+  const id = pid==='you'?'you':parseFloat(pid)||pid;
+  S.stablefordTeams.forEach((t,i)=>{ t.playerIds=t.playerIds.filter(x=>x!=id&&x!==id); });
+  if(checked) S.stablefordTeams[ti].playerIds.push(id);
+  renderSFTeamBuilder();
+}
+
+function renderSFPlayerChecklist(){
+  const el=document.getElementById('sf-player-checklist'); if(!el) return;
+  const all=[{id:'you',name:S.you.name||'You'},...S.opps.map(o=>({id:o.id,name:o.name}))];
+  if(!S.stablefordPlayers) S.stablefordPlayers=all.map(p=>p.id);
+  el.innerHTML=all.map(p=>{
+    const pidStr=p.id==='you'?'you':String(p.id);
+    const inGame=S.stablefordPlayers.some(id=>id==p.id);
+    return `<label style="display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid var(--border);cursor:pointer">
+      <input type="checkbox" class="sf-player-cb" data-pid="${pidStr}" ${inGame?'checked':''} style="width:16px;height:16px;accent-color:var(--green)">
+      <span style="font-size:14px;color:var(--text)">${p.name}</span>
+    </label>`;
+  }).join('');
+  el.querySelectorAll('.sf-player-cb').forEach(cb=>{
+    cb.addEventListener('change',()=>{
+      const pid=cb.dataset.pid==='you'?'you':parseFloat(cb.dataset.pid)||cb.dataset.pid;
+      toggleSFPlayer(pid,cb.checked);
+    });
+  });
+}
+function toggleSFPlayer(pid, checked){
+  if(!S.stablefordPlayers) S.stablefordPlayers=[];
+  const id=pid==='you'?'you':parseFloat(pid)||pid;
+  S.stablefordPlayers=S.stablefordPlayers.filter(x=>x!=id&&x!==id);
+  if(checked) S.stablefordPlayers.push(id);
+}
+
+function calcStablefordResults(){
+  if(!R||!R.games.stableford) return null;
+  const sr = calcStableford();
+  if(!sr) return null;
+  const sf = R.bets.stableford;
+  const you = sr.entries.find(e=>e.id==='you'||e.id=='you');
+  if(!you) return null;
+  const numPlayers = sr.entries.length;
+
+  let yourNet = 0;
+  if(sf.payoutType==='nassau'){
+    // Each player puts in $ per segment. Winner collects from all others.
+    const f9sorted=[...sr.entries].sort((a,b)=>b.ptsF9-a.ptsF9);
+    const b9sorted=[...sr.entries].sort((a,b)=>b.ptsB9-a.ptsB9);
+    const ttsorted=[...sr.entries].sort((a,b)=>b.ptsTotal-a.ptsTotal);
+    [[f9sorted,sf.f9],[b9sorted,sf.b9],[ttsorted,sf.total]].forEach(([sorted,amt])=>{
+      if(!amt) return;
+      const isWin=sorted[0]?.id==you.id||sorted[0]?.id===you.id;
+      yourNet += isWin ? amt*(numPlayers-1) : -amt;
+    });
+  } else {
+    // Buy-in pot × % per place
+    const buyin = sf.buyin||20;
+    const pot = buyin * numPlayers;
+    const sorted=[...sr.entries].sort((a,b)=>b.ptsTotal-a.ptsTotal);
+    const rank=sorted.findIndex(e=>e.id==you.id||e.id===you.id);
+    const spot=sf.spots?.[rank];
+    // Winner gets their % of pot minus their own buy-in
+    yourNet = spot ? Math.round(pot*(spot.pct||0)/100) - buyin : -buyin;
+  }
+  return {sr, yourNet, you, numPlayers};
+}
+
 function calcNinepoint(){
   if(!R.games.ninepoint) return null;
   const players = ninepointPlayers();
   if(players.length!==3) return null;
   const shootout = R.bets.ninepoint?.shootout||false;
   const perPt = R.bets.ninepoint?.pt||1;
-  const holesPlayed = R.currentHole+1;
+  const holesPlayed = R.currentHole; // only holes BEFORE currentHole are confirmed
 
   const totals = [0,0,0];
   const holeLog = [];
@@ -3659,7 +4167,7 @@ function calcJunk(){
   let greenieCarry = 1;
   let proxyCarry = 1;
   const log = [];
-  const holesPlayed = R.currentHole + 1;
+  const holesPlayed = R.currentHole; // only holes BEFORE currentHole are confirmed
 
   for(let h=0;h<holesPlayed;h++){
     const sc = R.scores[h];
@@ -4079,8 +4587,9 @@ function renderStatusPanel(){
       </div>
       <div style="display:flex;flex-wrap:wrap;gap:5px">
         ${wp.map(p=>{
-          const pts=wr.pts[p.id]||0, lead=pts===Math.max(...wp.map(x=>wr.pts[x.id]||0));
-          return `<div style="padding:3px 8px;border-radius:6px;background:${lead?'var(--gp)':'var(--r0)'};font-size:12px;font-weight:500;color:${lead?'var(--g1)':'var(--r4)'}">${p.name} ${pts}</div>`;
+          const pts=wr.pts[p.id]||0, lead=pts===Math.max(...wp.map(x=>wr.pts[x.id]||0))&&pts>0;
+          const isYou=p.id==='you'||p.id=='you';
+          return `<div style="padding:3px 8px;border-radius:6px;background:${lead?'var(--green-dim)':'var(--surface)'};font-size:12px;font-weight:${isYou?'600':'400'};color:${lead?'#7bc44a':'var(--text-2)'};border:${isYou?'1px solid rgba(77,138,40,0.3)':'1px solid transparent'}">${p.name} ${pts}pts</div>`;
         }).join('')}
       </div>
     </div>`;
@@ -4144,8 +4653,10 @@ function renderStatusPanel(){
 
   // 6,6,6 summary
   const r666 = calc666();
+  const j666status = calc666Junk();
   if(r666&&R.games.game666){
-    const nc = r666.myNet>0?'var(--g2)':r666.myNet<0?'var(--red)':'var(--r3)';
+    const combinedNet = (r666.myNet||0)+(j666status?.myNet||0);
+    const nc = combinedNet>0?'var(--g2)':combinedNet<0?'var(--red)':'var(--r3)';
     const h = R.currentHole, segIdx = Math.floor(h/6);
     const curSeg = r666.segments[segIdx];
     const isClosed = curSeg?.done||curSeg?.clinched;
@@ -4157,11 +4668,15 @@ function renderStatusPanel(){
           <span style="font-size:14px;font-weight:600">🎲 6,6,6 · $${R.bets.game666?.bet}/seg</span>
           ${isClosed?`<span style="font-size:9px;padding:1px 5px;border-radius:20px;background:var(--gold-dim);color:var(--gold-hi);border:1px solid rgba(200,149,42,0.3)">done</span>`:''}
         </div>
-        <span style="font-family:var(--serif);font-size:16px;color:${nc}">${r666.myNet===0?'$0':r666.myNet>0?'+$'+r666.myNet:'-$'+Math.abs(r666.myNet)}</span>
+        <span style="font-family:var(--serif);font-size:16px;color:${nc}">${combinedNet===0?'$0':combinedNet>0?'+$'+combinedNet:'-$'+Math.abs(combinedNet)}</span>
       </div>
       <div style="font-size:12px;color:var(--text-3)">${segLabel}: ${isClosed?'<span style="color:'+stCol(curSeg.status)+'">'+segStatus+'</span> · settled':segStatus}</div>
       <div style="display:flex;flex-wrap:wrap;gap:5px;margin-top:6px">
-        ${r666.allP.map(p=>{const n=r666.net[p.id]||0;const lead=n>0;return `<div style="padding:3px 8px;border-radius:6px;background:${lead?'var(--green-dim)':'var(--surface)'};font-size:12px;font-weight:500;color:${lead?'#7bc44a':'var(--text-3)'}">${p.name} ${n>=0?'+$'+n:'-$'+Math.abs(n)}</div>`;}).join('')}
+        ${r666.allP.map(p=>{
+          const n=(r666.net[p.id]||0)+(j666status?.net?.[p.id]||0);
+          const lead=n>0;
+          return `<div style="padding:3px 8px;border-radius:6px;background:${lead?'var(--green-dim)':'var(--surface)'};font-size:12px;font-weight:500;color:${lead?'#7bc44a':'var(--text-3)'}">${p.name} ${n>=0?'+$'+n:'-$'+Math.abs(n)}</div>`;
+        }).join('')}
       </div>
     </div>`;
   }
@@ -4530,9 +5045,11 @@ function renderResults(){
 
   // 6,6,6 results
   const r666=calc666();
+  const j666=calc666Junk();
   if(r666&&R.games.game666){
-    yourNet+=r666.myNet;
-    const nc=r666.myNet>=0?'var(--g2)':'var(--red)';
+    const combinedMyNet=(r666.myNet||0)+(j666?.myNet||0);
+    yourNet+=combinedMyNet;
+    const nc=combinedMyNet>=0?'var(--g2)':'var(--red)';
     const allP=r666.allP;
     const getName=id=>allP.find(p=>p.id==id)?.name||'?';
 
@@ -4542,31 +5059,49 @@ function renderResults(){
       const lbl=['Holes 1–6','Holes 7–12','Holes 13–18'][si];
       const tA=seg.seg.A.map(getName).join(' & ');
       const tB=seg.seg.B.map(getName).join(' & ');
-      const winner=seg.totalPay>0?`Team A (${tA})`:seg.totalPay<0?`Team B (${tB})`:'Tie';
       const pressNote = seg.presses&&seg.presses.length>0 ? ` · ${seg.presses.length} press${seg.presses.length>1?'es':''}` : '';
-      segRows+=`<div class="res-row">
+
+      // Junk for this segment
+      const js = j666?.segments?.find(s=>s?.segIdx===si);
+      let junkNote='';
+      if(js){
+        const jIcon = js.netPts>0?'🐦+':'🐦-';
+        junkNote = `<div style="font-size:11px;color:var(--text-3);margin-top:2px">Junk: A ${js.ptsA}pt · B ${js.ptsB}pt${js.netPts!==0?' · '+( js.winTeam==='A'?tA:tB)+' wins $'+js.junkAmt:' · Tied'}</div>`;
+      }
+
+      segRows+=`<div class="res-row" style="align-items:flex-start">
         <div><div style="font-size:13px;font-weight:600">${lbl}</div>
-        <div style="font-size:11px;color:var(--text-3)">${tA} vs ${tB}${pressNote}</div></div>
-        <span style="font-weight:600;color:${(seg.totalPay||0)>0?'var(--g2)':(seg.totalPay||0)<0?'var(--red)':'var(--r3)'}">${(seg.totalPay||0)>0?'+$'+(seg.totalPay):seg.totalPay<0?'-$'+Math.abs(seg.totalPay):'$0'}</span>
+        <div style="font-size:11px;color:var(--text-3)">${tA} vs ${tB}${pressNote}</div>
+        ${junkNote}</div>
+        <div style="text-align:right">
+          <div style="font-weight:600;color:${(seg.totalPay||0)>0?'var(--g2)':(seg.totalPay||0)<0?'var(--red)':'var(--r3)'}">${(seg.totalPay||0)>0?'+$'+(seg.totalPay):seg.totalPay<0?'-$'+Math.abs(seg.totalPay):'$0'}</div>
+          ${js&&js.junkAmt>0?`<div style="font-size:11px;color:var(--text-3)">+$${js.junkAmt} junk</div>`:''}
+        </div>
       </div>`;
     });
 
+    // Combined player totals including junk
     let playerRows='';
     r666.allP.forEach(p=>{
-      const pNet=r666.net[p.id]||0;
+      const pMain=r666.net[p.id]||0;
+      const pJunk=j666?.net?.[p.id]||0;
+      const pTotal=pMain+pJunk;
       const isYou=p.id==='you'||p.id=='you';
       playerRows+=`<div class="res-row">
         <span style="font-weight:${isYou?'600':'400'}">${p.name}${isYou?' (you)':''}</span>
-        <span style="font-weight:600;color:${pNet>0?'var(--g2)':pNet<0?'var(--red)':'var(--r3)'}">${pNet>0?'+$'+pNet:pNet<0?'-$'+Math.abs(pNet):'$0'}</span>
+        <div style="text-align:right">
+          <div style="font-weight:600;color:${pTotal>0?'var(--g2)':pTotal<0?'var(--red)':'var(--r3)'}">${pTotal>0?'+$'+pTotal:pTotal<0?'-$'+Math.abs(pTotal):'$0'}</div>
+          ${pJunk!==0?`<div style="font-size:10px;color:var(--text-3)">${pMain>0?'+':''}$${pMain} match · ${pJunk>0?'+':''}$${pJunk} junk</div>`:''}
+        </div>
       </div>`;
     });
 
     html+=`<div class="res-card">
       <div class="res-hdr" style="background:var(--surface);border-bottom-color:rgba(200,149,42,0.3)">
         <div>
-          <div style="font-size:15px;font-weight:600;color:var(--gold-hi)">🎲 6,6,6 · $${R.bets.game666?.bet}/segment</div>
+          <div style="font-size:15px;font-weight:600;color:var(--gold-hi)">🎲 6,6,6 · $${R.bets.game666?.bet}/segment${j666?` + Junk $${R.game666Junk?.junkPt}/pt`:''}</div>
         </div>
-        <span style="font-family:'DM Serif Display',serif;font-size:18px;color:${nc}">${r666.myNet>=0?'+$':'-$'}${Math.abs(r666.myNet)}</span>
+        <span style="font-family:'DM Serif Display',serif;font-size:18px;color:${nc}">${combinedMyNet>=0?'+$':'-$'}${Math.abs(combinedMyNet)}</span>
       </div>
       <div style="padding:8px 14px">
         <div style="font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--text-3);margin-bottom:6px">Segments</div>
@@ -4692,6 +5227,72 @@ function renderResults(){
     yourNet+=quotaNet;
   }
 
+  // Stableford results
+  if(R.games.stableford){
+    const sfr=calcStablefordResults();
+    if(sfr){
+      const {sr,yourNet:sfNet,you}=sfr;
+      const sf=R.bets.stableford;
+      const fmtPts=n=>n===0?'0':n>0?`+${n}`:`${n}`;
+      const ptCol=n=>n>0?'var(--g2)':n<0?'var(--red)':'var(--text-3)';
+      const numP=sfr.numPlayers||sr.entries.length;
+      let payoutRows='';
+      if(sf.payoutType==='nassau'){
+        const f9s=[...sr.entries].sort((a,b)=>b.ptsF9-a.ptsF9);
+        const b9s=[...sr.entries].sort((a,b)=>b.ptsB9-a.ptsB9);
+        const tts=[...sr.entries].sort((a,b)=>b.ptsTotal-a.ptsTotal);
+        [[f9s[0],'1st 9',sf.f9],[b9s[0],'2nd 9',sf.b9],[tts[0],'Total',sf.total]].forEach(([w,lbl,amt])=>{
+          if(!w||!amt) return;
+          const isYou=w.id==='you'||w.id=='you';
+          const pot=amt*(numP-1);
+          payoutRows+=`<div class="res-row"><span style="color:var(--text-2)">${lbl} Winner: ${w.name}</span><span style="font-weight:600;color:${isYou?'var(--g2)':'var(--text-3)'}">+$${pot}</span></div>`;
+        });
+        payoutRows+=`<div class="res-row"><span style="color:var(--text-3);font-size:11px">Each player contributed $${sf.f9} / $${sf.b9} / $${sf.total} per segment</span></div>`;
+      } else {
+        const buyin=sf.buyin||20;
+        const pot=buyin*numP;
+        const sorted=[...sr.entries].sort((a,b)=>b.ptsTotal-a.ptsTotal);
+        payoutRows+=`<div class="res-row"><span style="color:var(--text-3)">Buy-in: $${buyin}/player · Total pot: $${pot}</span></div>`;
+        (sf.spots||[]).forEach((s,i)=>{
+          if(i<sorted.length&&s.pct>0){
+            const w=sorted[i]; const isYou=w.id==='you'||w.id=='you';
+            const payout=Math.round(pot*(s.pct||0)/100);
+            payoutRows+=`<div class="res-row"><span style="color:var(--text-2)">${['1st','2nd','3rd','4th','5th','6th'][i]||i+1}: ${w.name} (${s.pct}%)</span><span style="font-weight:600;color:${isYou?'var(--g2)':'var(--text-3)'}">$${payout}</span></div>`;
+          }
+        });
+      }
+      const youPos=sr.sorted.findIndex(e=>e.id==='you'||e.id=='you')+1;
+      html+=`<div class="res-card">
+        <div class="res-hdr" style="background:var(--green-dim);border-bottom-color:rgba(77,138,40,0.3)">
+          <div>
+            <div style="font-size:15px;font-weight:600;color:#7bc44a">⭐ Stableford</div>
+            <div style="font-size:11px;color:var(--text-3);margin-top:2px">Finished ${youPos} of ${sr.entries.length} · ${you.ptsTotal} pts total</div>
+          </div>
+          <span style="font-family:var(--serif);font-size:18px;color:${sfNet>0?'var(--g2)':'var(--text-3)'}">${sfNet>0?'+$'+sfNet:sfNet<0?'-$'+Math.abs(sfNet):'$0'}</span>
+        </div>
+        <div style="padding:8px 14px">
+          <div style="font-size:10px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--text-3);margin-bottom:6px">Final Standings</div>
+          ${sr.sorted.map((e,i)=>{
+            const isYou=e.id==='you'||e.id=='you';
+            return `<div class="res-row">
+              <div style="display:flex;align-items:center;gap:5px">
+                <span style="font-size:11px;color:var(--text-3);width:16px">${i===0?'🏆':i+1}</span>
+                <span style="font-weight:${isYou?'600':'400'}">${e.name}${isYou?' (you)':''}</span>
+              </div>
+              <div style="display:flex;gap:10px;align-items:center">
+                <span style="font-size:11px;color:var(--text-3)">1st 9 <span style="color:${ptCol(e.ptsF9)};font-weight:600">${fmtPts(e.ptsF9)}</span></span>
+                <span style="font-size:11px;color:var(--text-3)">2nd 9 <span style="color:${ptCol(e.ptsB9)};font-weight:600">${fmtPts(e.ptsB9)}</span></span>
+                <span style="font-family:var(--serif);font-size:15px;color:${ptCol(e.ptsTotal)}">${fmtPts(e.ptsTotal)}</span>
+              </div>
+            </div>`;
+          }).join('')}
+        </div>
+        ${payoutRows?`<div style="padding:8px 14px;background:var(--surface)"><div style="font-size:10px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--text-3);margin-bottom:5px">Payouts</div>${payoutRows}</div>`:''}
+      </div>`;
+      yourNet+=sfNet;
+    }
+  }
+
   const dc=yourNet>=0?'var(--gold)':'#ff8080';
   const ds=yourNet>=0?`+$${yourNet}`:`-$${Math.abs(yourNet)}`;
   html+=`<div class="day-total"><span style="color:rgba(255,255,255,.7)">Your Day Net</span><span style="font-family:'DM Serif Display',serif;font-size:28px;color:${dc}">${ds}</span></div>`;
@@ -4734,6 +5335,8 @@ function finishRound(){
     if(n||c) breakdown.push({label:'vs '+o.name,net:mn});
   });
   if(wp){ dayNet+=wp.myNet; if(wp.myNet!==0) breakdown.push({label:'Wolf',net:wp.myNet}); }
+  const sfr=calcStablefordResults();
+  if(sfr&&sfr.yourNet!==0){ dayNet+=sfr.yourNet; breakdown.push({label:'Stableford',net:sfr.yourNet}); }
   if(jr){ dayNet+=jr.myNet; if(jr.myNet!==0) breakdown.push({label:'Junk',net:jr.myNet}); }
   const vr=calcVegas();
   if(vr){ dayNet+=vr.myDollars; if(vr.myDollars!==0) breakdown.push({label:'Vegas',net:vr.myDollars}); }
@@ -4741,6 +5344,8 @@ function finishRound(){
   if(nr){ dayNet+=nr.myDollars; if(nr.myDollars!==0) breakdown.push({label:'9 Point',net:nr.myDollars}); }
   const r666=calc666();
   if(r666){ dayNet+=r666.myNet; if(r666.myNet!==0) breakdown.push({label:'6,6,6',net:r666.myNet}); }
+  const j666=calc666Junk();
+  if(j666&&j666.myNet!==0){ dayNet+=j666.myNet; breakdown.push({label:'6,6,6 Junk',net:j666.myNet}); }
   // Quota payout
   if(R.games.quota){
     const qr=calcQuota();
@@ -5800,6 +6405,108 @@ function get666NetScore(pid, h, segIdx){
   return gross - strokeBonus;
 }
 
+// ═══════════════════════════════════════════════════
+//  6,6,6 JUNK ENGINE
+// ═══════════════════════════════════════════════════
+function calc666JunkSegment(segIdx){
+  const j = R.game666Junk;
+  if(!j||!j.enabled) return null;
+  const segs = R.game666Segments;
+  if(!segs||!segs[segIdx]) return null;
+  const seg = segs[segIdx];
+  if(seg.A.length!==2||seg.B.length!==2) return null;
+
+  const hStart = segIdx * 6;
+  const hEnd   = hStart + 5;
+  const cats = j.cats || {birdies:true, eagles:true, partnerpar:true};
+  const pts  = j.pts  || {birdie:2, eagle:4, partnerpar:3};
+  const junkPt = j.junkPt || 1;
+
+  const allP = [{id:'you',name:R.you.name,hdcp:R.you.hdcp},...R.opps.map(o=>({id:o.id,name:o.name,hdcp:o.hdcp}))];
+  const getName = id => allP.find(p=>p.id==id)?.name||'?';
+
+  // Track junk events per team
+  const events = {A:[], B:[]};
+  let ptsA=0, ptsB=0;
+
+  // Use the same net score function as the main match engine
+  const netFor = (pid, h) => get666NetScore(pid, h, segIdx);
+
+  for(let h=hStart; h<=hEnd; h++){
+    if(!isPlayed(h)) continue;
+    const par = PAR[holeIdx(h)];
+
+    // Check each team
+    ['A','B'].forEach(team=>{
+      const [p1id, p2id] = seg[team];
+      const n1 = netFor(p1id, h);
+      const n2 = netFor(p2id, h);
+
+      // Birdies — any team member makes birdie (exact par-1)
+      if(cats.birdies){
+        [[p1id,n1],[p2id,n2]].forEach(([pid,n])=>{
+          if(n!==null && n===par-1){
+            const ev={h,hole:holeIdx(h)+1,pid,name:getName(pid),cat:'birdie',pts:pts.birdie||2};
+            events[team].push(ev);
+            if(team==='A') ptsA+=ev.pts; else ptsB+=ev.pts;
+          }
+        });
+      }
+
+      // Eagles — any team member makes eagle or better
+      if(cats.eagles){
+        [[p1id,n1],[p2id,n2]].forEach(([pid,n])=>{
+          if(n!==null && n<=par-2){
+            const ev={h,hole:holeIdx(h)+1,pid,name:getName(pid),cat:'eagle',pts:pts.eagle||4};
+            events[team].push(ev);
+            if(team==='A') ptsA+=ev.pts; else ptsB+=ev.pts;
+          }
+        });
+      }
+
+      // Partner Par — BOTH team members make par or better (birdie/eagle counts)
+      if(cats.partnerpar && n1!==null && n2!==null){
+        if(n1<=par && n2<=par){
+          const ev={h,hole:holeIdx(h)+1,pid:null,name:`${getName(p1id)} & ${getName(p2id)}`,cat:'partnerpar',pts:pts.partnerpar||3};
+          events[team].push(ev);
+          if(team==='A') ptsA+=ev.pts; else ptsB+=ev.pts;
+        }
+      }
+    });
+  }
+
+  // Money: winner team collects (ptDiff × junkPt) from matched counterpart
+  const netPts = ptsA - ptsB; // positive = A wins
+  const junkAmt = Math.abs(netPts) * junkPt;
+
+  return {segIdx, seg, events, ptsA, ptsB, netPts, junkPt, junkAmt,
+          winTeam: netPts>0?'A':netPts<0?'B':null};
+}
+
+function calc666Junk(){
+  if(!R||!R.game666Junk?.enabled) return null;
+  const segments=[0,1,2].map(i=>calc666JunkSegment(i)).filter(Boolean);
+  if(!segments.length) return null;
+
+  const allP=[{id:'you',name:R.you.name},...R.opps.map(o=>({id:o.id,name:o.name}))];
+  const net={};
+  allP.forEach(p=>net[p.id]=0);
+
+  segments.forEach(s=>{
+    if(!s||s.netPts===0||!s.winTeam) return;
+    const winTeam = s.seg[s.winTeam];
+    const loseTeam = s.seg[s.winTeam==='A'?'B':'A'];
+    const amt = s.junkAmt;
+    for(let i=0;i<2;i++){
+      const wid=winTeam[i], lid=loseTeam[i];
+      if(net[wid]!==undefined) net[wid]+=amt;
+      if(net[lid]!==undefined) net[lid]-=amt;
+    }
+  });
+
+  return {segments, net, myNet:net['you']||0, allP};
+}
+
 function calc666Segment(segIdx){
   if(!R||!R.games.game666) return null;
   const segs = R.game666Segments;
@@ -5818,6 +6525,7 @@ function calc666Segment(segIdx){
   let clinched = false;
 
   for(let h=hStart; h<=hEnd; h++){
+    if(!isPlayed(h)){ results.push(null); continue; }
     const a1 = get666NetScore(seg.A[0],h,segIdx), a2 = get666NetScore(seg.A[1],h,segIdx);
     const b1 = get666NetScore(seg.B[0],h,segIdx), b2 = get666NetScore(seg.B[1],h,segIdx);
     if(a1===null||a2===null||b1===null||b2===null){
@@ -5937,13 +6645,40 @@ function render666Panel(){
 
   const isClosed = seg666.done || seg666.clinched;
 
+  // Junk for this segment
+  const junkSeg = calc666JunkSegment(segIdx);
+  const junkFull = calc666Junk();
+  const junkMyNet = junkFull?.myNet||0;
+  const totalMyNet = myNet + junkMyNet;
+  const totalNc = totalMyNet>0?'var(--g2)':totalMyNet<0?'var(--red)':'var(--text-3)';
+
+  // Build junk event chips for this segment
+  let junkChips='';
+  if(junkSeg){
+    ['A','B'].forEach(team=>{
+      junkSeg.events[team].forEach(ev=>{
+        const icon = ev.cat==='birdie'?'🐦':ev.cat==='eagle'?'🦅':'🤝';
+        const bg = team==='A'?'var(--green-dim)':'var(--red-dim)';
+        const col = team==='A'?'#7bc44a':'var(--red)';
+        junkChips+=`<span style="font-size:10px;padding:2px 6px;border-radius:4px;background:${bg};color:${col}">H${ev.hole} ${icon} ${ev.name} +${ev.pts}pt</span>`;
+      });
+    });
+    if(junkSeg.netPts!==0||junkChips){
+      const jCol=junkSeg.netPts>0?'var(--g2)':junkSeg.netPts<0?'var(--red)':'var(--text-3)';
+      junkChips=`<div style="margin-top:6px;border-top:1px solid var(--border);padding-top:6px">
+        <div style="font-size:10px;color:var(--text-3);margin-bottom:4px">Junk · A: ${junkSeg.ptsA}pts · B: ${junkSeg.ptsB}pts <span style="color:${jCol}">${junkSeg.netPts===0?'AS':junkSeg.netPts>0?'Team A +':'Team B +'}${Math.abs(junkSeg.netPts)}pt</span></div>
+        <div style="display:flex;flex-wrap:wrap;gap:3px">${junkChips}</div>
+      </div>`;
+    }
+  }
+
   el.innerHTML=`<div class="score-card" style="border-color:#fde68a${isClosed?';opacity:0.85':''}">
     <div class="score-hdr" style="display:flex;align-items:center;justify-content:space-between">
       <div style="display:flex;align-items:center;gap:6px">
         <span>🎲 6,6,6 · ${segLabel}</span>
         ${isClosed?`<span style="font-size:9px;padding:1px 5px;border-radius:20px;background:rgba(200,149,42,0.2);color:#e8b84b;border:1px solid rgba(200,149,42,0.3)">done</span>`:''}
       </div>
-      <span style="font-family:var(--serif);font-size:14px;color:${nc}">${myNet===0?'$0':myNet>0?'+$'+myNet:'-$'+Math.abs(myNet)}</span>
+      <span style="font-family:var(--serif);font-size:14px;color:${totalNc}">${totalMyNet===0?'$0':totalMyNet>0?'+$'+totalMyNet:'-$'+Math.abs(totalMyNet)}</span>
     </div>
     <div style="padding:8px 14px">
       <div style="font-size:12px;color:var(--text-3);margin-bottom:8px">A: ${tANames} &nbsp;·&nbsp; B: ${tBNames}</div>
@@ -5958,6 +6693,7 @@ function render666Panel(){
           return `<div style="font-size:11px;font-weight:500;margin-bottom:3px;color:${pCol}">Press ${pi+1} · H${p.startHole} ${p.result>0?'+':''}${p.result}${pDone?' ✓':''}</div>`;
         }).join('') :''}
       <div style="font-size:11px;color:var(--text-3)">${isClosed?'Segment complete':holesLeftInSeg+' hole'+(holesLeftInSeg!==1?'s':'')+' left'} · $${seg666.bet}/match</div>
+      ${junkChips}
     </div>
   </div>`;
 }
