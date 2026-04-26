@@ -655,6 +655,29 @@ body{font-family:var(--sans);background:var(--bg);color:var(--text);
       </div>
     </div>
 
+    <!-- 25 Point -->
+    <div class="gc" id="gc-twentyfive">
+      <div class="gc-hdr" onclick="toggleGame('twentyfive')">
+        <div class="gc-icon" style="background:#fef9c3">2️⃣5️⃣</div>
+        <div style="flex:1"><div class="gc-name">25 Point</div><div class="gc-desc">5-player · 9/7/5/3/1 per hole · ladder payout</div></div>
+        <div class="tog" id="tog-twentyfive"><div class="tog-k"></div></div>
+      </div>
+      <div class="gc-body">
+        <div class="bet-row">
+          <div class="bet-f"><label>$ / Point</label><input class="bet-in" type="number" id="tfp-pt" value="1" min="1"></div>
+        </div>
+        <div class="card-title" style="margin-bottom:6px">Who's in 25 Point? <span style="font-size:11px;font-weight:400;color:var(--text-3)">(need exactly 5)</span></div>
+        <div id="twentyfive-player-checklist" style="margin-bottom:10px"></div>
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-top:1px solid var(--border);margin-top:4px">
+          <div>
+            <div style="font-size:14px;font-weight:500">Shootout Rule</div>
+            <div style="font-size:11px;color:var(--text-3)">Win 2+ better than all others → all 25 pts</div>
+          </div>
+          <div class="tog" id="tog-tfp-shootout" onclick="toggleTfpShootout(this)"><div class="tog-k"></div></div>
+        </div>
+      </div>
+    </div>
+
     <!-- Stableford -->
     <div class="gc" id="gc-stableford">
       <div class="gc-hdr" onclick="toggleGame('stableford')">
@@ -852,6 +875,7 @@ body{font-family:var(--sans);background:var(--bg);color:var(--text);
     </div>
     <div style="padding:8px 16px 0" id="vegas-panel"></div>
     <div style="padding:8px 16px 0" id="ninepoint-panel"></div>
+    <div style="padding:8px 16px 0" id="twentyfive-panel"></div>
     <div style="padding:8px 16px 0" id="game666-panel"></div>
     <div style="padding:8px 16px 0" id="stableford-panel"></div>
     <div style="padding:8px 16px 0" id="quota-panel"></div>
@@ -1375,7 +1399,7 @@ const NAV_SCREENS = new Set(['s-home','s-history','s-ledger','s-roster','s-tmt',
 let S = {
   you: {name:'',hdcp:0},
   opps: [],           // [{name,hdcp,type,id}]
-  games: {nassau:false,closeout:false,wolf:false,junk:false,vegas:false,quota:false,ninepoint:false,game666:false,stableford:false},
+  games: {nassau:false,closeout:false,wolf:false,junk:false,vegas:false,quota:false,ninepoint:false,twentyfive:false,game666:false,stableford:false},
   bets: {nassau:{f9:5,b9:5,overall:10,press:5}, closeout:{base:10,press:5}, wolf:{pt:2,bump:false,blindMult:4,loneMult:3,soloMult:2}, junk:{pt:1,team:false,birdie:2,eagle:4}, vegas:{pt:1,max:2,cap:true},
     quota:{payoutType:'overall', spots:[{place:1,amt:50},{place:2,amt:30},{place:3,amt:20}],
            f9:10, b9:10, total:20, format:'individual', teamSize:2, scoresCount:2,
@@ -1654,6 +1678,7 @@ function toggleGame(g){
   if(g==='quota'&&S.games.quota){ renderQuotaSpotsBuilder(); renderQuotaTeamBuilder(); }
   if(g==='game666') render666SegmentBuilder();
   if(g==='stableford'){ renderSFPlayerChecklist(); renderSFSpotsBuilder(); }
+  if(g==='twentyfive') renderTwentyfivePlayerChecklist();
 }
 
 function toggleNpShootout(tog){
@@ -2083,10 +2108,14 @@ function wolfOrderMove(idx, dir){
 }
 
 function step2to3(){
-  if(!S.games.nassau&&!S.games.closeout&&!S.games.wolf&&!S.games.junk&&!S.games.vegas&&!S.games.quota&&!S.games.ninepoint&&!S.games.game666&&!S.games.stableford){ alert('Select at least one game.'); return; }
+  if(!S.games.nassau&&!S.games.closeout&&!S.games.wolf&&!S.games.junk&&!S.games.vegas&&!S.games.quota&&!S.games.ninepoint&&!S.games.game666&&!S.games.stableford&&!S.games.twentyfive){ alert('Select at least one game.'); return; }
   if(S.games.ninepoint){
     if(S.ninepointPlayers.length!==3){ alert('9 Point requires exactly 3 players selected. You have '+S.ninepointPlayers.length+'.'); return; }
     S.bets.ninepoint.pt=+document.getElementById('np-pt').value||1;
+  if(S.games.twentyfive){
+    S.bets.twentyfive.pt=+document.getElementById('tfp-pt').value||1;
+    S.bets.twentyfive.shootout=document.getElementById('tog-tfp-shootout')?.classList.contains('on')||false;
+  }
   }
   S.bets.nassau={f9:+document.getElementById('n-f9').value||5,b9:+document.getElementById('n-b9').value||5,overall:+document.getElementById('n-18').value||10,press:+document.getElementById('n-press').value||5};
   S.bets.closeout={base:+document.getElementById('c-base').value||10,press:+document.getElementById('c-press').value||5};
@@ -2192,7 +2221,7 @@ function renderStrokes(){
 
   // 1v1 stroke cards — shown when any game uses playerStrokes (nassau, closeout, wolf, vegas, 9pt, quota)
   // Hidden when ONLY 6,6,6 is selected since it has its own per-segment stroke system
-  const needsPlayerStrokes = S.games.nassau||S.games.closeout||S.games.wolf||S.games.vegas||S.games.ninepoint||S.games.quota||S.games.stableford;
+  const needsPlayerStrokes = S.games.nassau||S.games.closeout||S.games.wolf||S.games.vegas||S.games.ninepoint||S.games.quota||S.games.stableford||S.games.twentyfive;
   if(needsPlayerStrokes){
     html += S.opps.map((o,i)=>{
     const m = S.matches[i] || {strokes:0, youGet:false, inNassau:false, inCloseout:false};
@@ -2482,6 +2511,7 @@ function showConfirm(){
   if(S.games.wolf) html+=`<div class="sum-row"><span class="muted">Wolf</span><span style="font-weight:600">$${S.bets.wolf.pt}/pt</span></div>`;
   if(S.games.ninepoint) html+=`<div class="sum-row"><span class="muted">9 Point</span><span style="font-weight:600">$${S.bets.ninepoint.pt}/pt${S.bets.ninepoint.shootout?' · 🎯 Shootout':''}</span></div>`;
   if(S.games.stableford){ const sf=S.bets.stableford; html+=`<div class="sum-row"><span class="muted">Stableford</span><span style="font-weight:600">${sf.payoutType==='nassau'?'1st 9 $'+sf.f9+' / 2nd 9 $'+sf.b9+' / Total $'+sf.total:'Spots payout'} · ${sf.format}</span></div>`; }
+  if(S.games.twentyfive) html+=`<div class="sum-row"><span class="muted">25 Point</span><span style="font-weight:600">$${S.bets.twentyfive.pt}/pt</span></div>`;
   if(S.games.game666) html+=`<div class="sum-row"><span class="muted">6,6,6</span><span style="font-weight:600">$${S.bets.game666.bet}/segment</span></div>`;
   if(S.games.quota){
     const q=S.bets.quota;
@@ -2541,6 +2571,7 @@ function startRound(){
     quotaGamePlayers:S.quotaPlayers.slice(),
     game666Segments: JSON.parse(JSON.stringify(S.game666Segments||[])),
     stablefordPlayers: JSON.parse(JSON.stringify(S.stablefordPlayers||[])),
+    twentyfivePlayers: JSON.parse(JSON.stringify(S.bets.twentyfive?.players||[])),
     stablefordTeams: JSON.parse(JSON.stringify(S.stablefordTeams||[])),
     game666Strokes:  JSON.parse(JSON.stringify(S.game666Strokes||[{},{},{}])),
     game666Junk:     JSON.parse(JSON.stringify(S.bets.game666Junk||{enabled:false})),
@@ -2946,6 +2977,7 @@ function initScorecard(){
   renderScoreInputs();
   renderVegasPanel();
   renderNinepointPanel();
+  renderTwentyfivePanel();
   render666Panel();
   renderStablefordPanel();
   renderQuotaPanel();
@@ -3016,6 +3048,7 @@ function changeScore(pid,delta){
   renderScoreInputs();
   renderVegasPanel();
   renderNinepointPanel();
+  renderTwentyfivePanel();
   render666Panel();
   renderStablefordPanel();
   renderQuotaPanel();
@@ -4115,8 +4148,168 @@ function renderNinepointPanel(){
 
 // Status panel
 // ═══════════════════════════════════════════════════
-//  JUNK ENGINE
+//  25 POINT ENGINE
 // ═══════════════════════════════════════════════════
+function twentyfivePlayers(){
+  if(!R) return [];
+  const ids = R.bets.twentyfive?.players || [];
+  const all = [{id:'you',name:R.you.name},...R.opps.map(o=>({id:o.id,name:o.name}))];
+  if(!ids.length) return all;
+  return all.filter(p=>ids.some(id=>id==p.id));
+}
+
+function tfpNetScore(pid, h){
+  const sc = R.scores[h];
+  const raw = pid==='you'||pid=='you' ? sc.you : sc[pid];
+  const gross = parseInt(raw);
+  if(isNaN(gross)) return null;
+  // Use shared playerStrokes map — same as quota/stableford
+  const strokes = R.playerStrokes ? (R.playerStrokes[pid] ?? R.playerStrokes[String(pid)] ?? 0) : 0;
+  return gross - (strokes>0 && HCP[holeIdx(h)]<=strokes ? 1 : 0);
+}
+
+// Generic point distributor: given sorted indices and base array [9,7,5,3,1]
+// handles all tie combinations by splitting tied positions
+function tfpHolePoints(nets, shootout){
+  if(nets.some(n=>n===null)) return null;
+  const n = nets.length; // 5
+
+  // Shootout: one player is 2+ better than ALL others → all 25 pts
+  if(shootout){
+    for(let i=0;i<n;i++){
+      if(nets.every((v,j)=>j===i || nets[i]<=v-2)){
+        const pts=Array(n).fill(0); pts[i]=25; return pts;
+      }
+    }
+  }
+
+  const base = [9,7,5,3,1]; // position values, sum = 25
+  const pts = Array(n).fill(0);
+
+  // Group players by score (rank)
+  const sorted = [...nets].sort((a,b)=>a-b);
+  const uniqueScores = [...new Set(sorted)];
+
+  let posIdx = 0; // current position in base array
+  uniqueScores.forEach(score=>{
+    // Find all players with this score
+    const tied = nets.reduce((acc,v,i)=>{ if(v===score) acc.push(i); return acc; }, []);
+    // Sum the base values for the positions they occupy
+    const posValues = base.slice(posIdx, posIdx+tied.length);
+    const shared = Math.round(posValues.reduce((a,b)=>a+b,0) / tied.length);
+    tied.forEach(i=>pts[i]=shared);
+    posIdx += tied.length;
+  });
+
+  return pts;
+}
+
+function calcTwentyfive(){
+  if(!R.games.twentyfive) return null;
+  const players = twentyfivePlayers();
+  if(players.length!==5) return null;
+  const shootout = R.bets.twentyfive?.shootout||false;
+  const perPt = R.bets.twentyfive?.pt||1;
+  const holesPlayed = R.currentHole;
+
+  const totals = Array(5).fill(0);
+  const holeLog = [];
+
+  for(let h=0;h<holesPlayed;h++){
+    const nets = players.map(p=>tfpNetScore(p.id,h));
+    const pts = tfpHolePoints(nets, shootout);
+    if(!pts){ holeLog.push({h,skip:true}); continue; }
+    pts.forEach((p,i)=>totals[i]+=p);
+    const isShootout = shootout && pts.some(p=>p===25);
+    holeLog.push({h,nets,pts,shootout:isShootout});
+  }
+
+  // Rank players by total descending
+  const ranked = Array.from({length:5},(_,i)=>i).sort((a,b)=>totals[b]-totals[a]);
+
+  // Ladder payout: each player pays every player above them the point difference × perPt
+  const txns = [];
+  for(let i=0;i<5;i++){
+    for(let j=i+1;j<5;j++){
+      const hi=ranked[i], lo=ranked[j];
+      const diff=totals[hi]-totals[lo];
+      if(diff>0) txns.push({from:players[lo].name,to:players[hi].name,pts:diff,dollars:diff*perPt});
+    }
+  }
+
+  const youIdx = players.findIndex(p=>p.id==='you'||p.id=='you');
+  let myDollars=0;
+  if(youIdx>=0){
+    txns.forEach(t=>{
+      if(t.from===players[youIdx].name) myDollars-=t.dollars;
+      if(t.to===players[youIdx].name) myDollars+=t.dollars;
+    });
+  }
+
+  return {players,totals,ranked,holeLog,perPt,shootout,txns,myDollars,youIdx};
+}
+
+function calcTwentyfiveResults(){ return calcTwentyfive(); }
+
+function renderTwentyfivePanel(){
+  const el = document.getElementById('twentyfive-panel');
+  if(!R||!R.games.twentyfive){if(el)el.innerHTML='';return;}
+  if(!el) return;
+  const tr = calcTwentyfive();
+  if(!tr){el.innerHTML='';return;}
+
+  const h = R.currentHole;
+  const nc = tr.myDollars>0?'var(--g2)':tr.myDollars<0?'var(--red)':'var(--r3)';
+  const ns = tr.myDollars===0?'$0':tr.myDollars>0?`+$${tr.myDollars}`:`-$${Math.abs(tr.myDollars)}`;
+  const medals = ['🥇','🥈','🥉','4️⃣','5️⃣'];
+
+  el.innerHTML=`<div class="score-card" style="border-color:#fef08a">
+    <div class="score-hdr" style="display:flex;align-items:center;justify-content:space-between">
+      <span>2️⃣5️⃣ 25 Point · $${tr.perPt}/pt${tr.shootout?' · 🎯 Shootout':''}</span>
+      <span style="font-family:'DM Serif Display',serif;font-size:15px;color:${nc}">${ns}</span>
+    </div>
+    <div style="padding:8px 14px">
+      ${tr.ranked.map((idx,rank)=>{
+        const p=tr.players[idx];
+        const isYou=p.id==='you'||p.id=='you';
+        const dollars=tr.totals[idx]*tr.perPt;
+        return `<div style="display:flex;align-items:center;gap:8px;padding:4px 0;border-bottom:1px solid var(--border)">
+          <span style="font-size:11px;color:var(--text-3);width:18px">${medals[rank]}</span>
+          <span style="flex:1;font-size:13px;font-weight:${isYou?'700':'400'}">${p.name}${isYou?' ★':''}</span>
+          <span style="font-size:13px;font-weight:600;color:var(--text)">${tr.totals[idx]}pts</span>
+          <span style="font-size:12px;color:var(--text-3);min-width:36px;text-align:right">$${dollars}</span>
+        </div>`;
+      }).join('')}
+    </div>
+  </div>`;
+}
+
+function renderTwentyfivePlayerChecklist(){
+  const el=document.getElementById('twentyfive-player-checklist'); if(!el) return;
+  const all=[{id:'you',name:S.you.name||'You'},...S.opps.map(o=>({id:o.id,name:o.name}))];
+  if(!S.bets.twentyfive) S.bets.twentyfive={pt:1,shootout:false};
+  if(!S.bets.twentyfive.players) S.bets.twentyfive.players=all.map(p=>p.id);
+  el.innerHTML=all.map(p=>{
+    const pidStr=p.id==='you'?'you':String(p.id);
+    const inGame=S.bets.twentyfive.players.some(id=>id==p.id);
+    return `<label style="display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid var(--border);cursor:pointer">
+      <input type="checkbox" class="tfp-player-cb" data-pid="${pidStr}" ${inGame?'checked':''} style="width:16px;height:16px;accent-color:var(--green)">
+      <span style="font-size:14px;color:var(--text)">${p.name}</span>
+    </label>`;
+  }).join('');
+  el.querySelectorAll('.tfp-player-cb').forEach(cb=>{
+    cb.addEventListener('change',()=>{
+      const pid=cb.dataset.pid==='you'?'you':parseFloat(cb.dataset.pid)||cb.dataset.pid;
+      if(cb.checked){ if(!S.bets.twentyfive.players.some(id=>id==pid)) S.bets.twentyfive.players.push(pid); }
+      else { S.bets.twentyfive.players=S.bets.twentyfive.players.filter(id=>id!=pid); }
+    });
+  });
+}
+
+function toggleTfpShootout(tog){
+  tog.classList.toggle('on');
+  if(S.bets.twentyfive) S.bets.twentyfive.shootout=tog.classList.contains('on');
+}
 
 // Get group member players (eligible for junk)
 function junkPlayers(){
@@ -4590,6 +4783,26 @@ function renderStatusPanel(){
           const pts=wr.pts[p.id]||0, lead=pts===Math.max(...wp.map(x=>wr.pts[x.id]||0))&&pts>0;
           const isYou=p.id==='you'||p.id=='you';
           return `<div style="padding:3px 8px;border-radius:6px;background:${lead?'var(--green-dim)':'var(--surface)'};font-size:12px;font-weight:${isYou?'600':'400'};color:${lead?'#7bc44a':'var(--text-2)'};border:${isYou?'1px solid rgba(77,138,40,0.3)':'1px solid transparent'}">${p.name} ${pts}pts</div>`;
+        }).join('')}
+      </div>
+    </div>`;
+  }
+
+  // 25 Point summary
+  const tr=calcTwentyfive();
+  if(tr&&R.games.twentyfive){
+    const nc=tr.myDollars>0?'var(--g2)':tr.myDollars<0?'var(--red)':'var(--r3)';
+    const medals=['🥇','🥈','🥉','4️⃣','5️⃣'];
+    html+=`<div class="status-card" style="border-color:#fef08a">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+        <span style="font-size:14px;font-weight:600">2️⃣5️⃣ 25 Point${tr.shootout?' · 🎯':''}</span>
+        <span style="font-family:'DM Serif Display',serif;font-size:16px;color:${nc}">${tr.myDollars===0?'$0':tr.myDollars>0?'+$'+tr.myDollars:'-$'+Math.abs(tr.myDollars)}</span>
+      </div>
+      <div style="display:flex;flex-wrap:wrap;gap:5px">
+        ${tr.ranked.slice(0,5).map((idx,rank)=>{
+          const p=tr.players[idx]; const pts=tr.totals[idx];
+          const isYou=p.id==='you'||p.id=='you';
+          return `<div style="padding:3px 8px;border-radius:6px;background:${rank===0?'var(--green-dim)':'var(--surface)'};font-size:12px;font-weight:${isYou?'600':'400'};color:${rank===0?'#7bc44a':'var(--text-2)'}">${medals[rank]} ${p.name} ${pts}pts</div>`;
         }).join('')}
       </div>
     </div>`;
@@ -5227,9 +5440,51 @@ function renderResults(){
     yourNet+=quotaNet;
   }
 
+  // 25 Point results
+  if(R.games.twentyfive){
+    const tr=calcTwentyfive();
+    if(tr){
+      yourNet+=tr.myDollars;
+      const nc=tr.myDollars>=0?'var(--g2)':'var(--red)';
+      const medals=['🥇','🥈','🥉','4️⃣','5️⃣'];
+      html+=`<div class="res-card">
+        <div class="res-hdr" style="background:rgba(254,249,195,0.08);border-bottom-color:rgba(250,204,21,0.3)">
+          <div>
+            <div style="font-size:15px;font-weight:600;color:#eab308">2️⃣5️⃣ 25 Point · $${R.bets.twentyfive?.pt}/pt${tr.shootout?' · 🎯 Shootout':''}</div>
+          </div>
+          <span style="font-family:'DM Serif Display',serif;font-size:18px;color:${nc}">${tr.myDollars>=0?'+$':'-$'}${Math.abs(tr.myDollars)}</span>
+        </div>
+        <div style="padding:8px 14px">
+          <div style="font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--text-3);margin-bottom:6px">Final Standings</div>
+          ${tr.ranked.map((idx,rank)=>{
+            const p=tr.players[idx];
+            const isYou=p.id==='you'||p.id=='you';
+            const dollars=tr.totals[idx]*tr.perPt;
+            return `<div class="res-row">
+              <div style="display:flex;align-items:center;gap:5px">
+                <span style="font-size:11px;color:var(--text-3);width:18px">${medals[rank]}</span>
+                <span style="font-weight:${isYou?'600':'400'}">${p.name}${isYou?' (you)':''}</span>
+              </div>
+              <div style="display:flex;gap:10px;align-items:center">
+                <span style="font-size:12px;color:var(--text-3)">${tr.totals[idx]} pts</span>
+                <span style="font-family:var(--serif);font-size:15px;font-weight:600;color:${tr.totals[idx]===Math.max(...tr.totals)?'var(--g2)':'var(--text-3)'}">$${dollars}</span>
+              </div>
+            </div>`;
+          }).join('')}
+        </div>
+        ${tr.txns.length?`<div style="padding:8px 14px;background:var(--surface)">
+          <div style="font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--text-3);margin-bottom:5px">Payouts</div>
+          ${tr.txns.map(t=>`<div class="res-row"><span style="color:var(--text-2)">${t.from} → ${t.to}</span><span style="font-weight:600;color:var(--text-3)">$${t.dollars}</span></div>`).join('')}
+        </div>`:''}
+      </div>`;
+    }
+  }
+
   // Stableford results
   if(R.games.stableford){
-    const sfr=calcStablefordResults();
+    const tfr=calcTwentyfiveResults();
+  if(tfr&&tfr.myDollars!==0){ dayNet+=tfr.myDollars; breakdown.push({label:'25 Point',net:tfr.myDollars}); }
+  const sfr=calcStablefordResults();
     if(sfr){
       const {sr,yourNet:sfNet,you}=sfr;
       const sf=R.bets.stableford;
@@ -5335,6 +5590,8 @@ function finishRound(){
     if(n||c) breakdown.push({label:'vs '+o.name,net:mn});
   });
   if(wp){ dayNet+=wp.myNet; if(wp.myNet!==0) breakdown.push({label:'Wolf',net:wp.myNet}); }
+  const tfr=calcTwentyfiveResults();
+  if(tfr&&tfr.myDollars!==0){ dayNet+=tfr.myDollars; breakdown.push({label:'25 Point',net:tfr.myDollars}); }
   const sfr=calcStablefordResults();
   if(sfr&&sfr.yourNet!==0){ dayNet+=sfr.yourNet; breakdown.push({label:'Stableford',net:sfr.yourNet}); }
   if(jr){ dayNet+=jr.myNet; if(jr.myNet!==0) breakdown.push({label:'Junk',net:jr.myNet}); }
